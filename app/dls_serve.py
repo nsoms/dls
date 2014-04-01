@@ -7,6 +7,8 @@ import threading
 
 from config import Config
 from actions import *
+import RPi.GPIO as GPIO
+
 
 
 class Server(threading.Thread):
@@ -20,7 +22,13 @@ class Server(threading.Thread):
         Function send signal to GPIO port with stored configuration
         :return:
         """
-        print "Send signal to GPIO"
+        gpio_port = self.config.get('GPIO_port', None)
+        if gpio_port is not None:
+            GPIO.output(int(gpio_port), 1)
+            time.sleep(Config.sleep_delay)
+            GPIO.output(int(gpio_port), 0)
+        
+            print "Send signal to GPIO"
 
     def check(self):
         """
@@ -143,7 +151,13 @@ class Server(threading.Thread):
 
 def main():
     i = 0
+    GPIO.setmode(GPIO.BOARD)
+
     for c in Config.devs:
+        gpio_port = c.get('GPIO_port', None)
+        if gpio_port is not None:
+            print int(gpio_port)
+            GPIO.setup(int(gpio_port), GPIO.OUT)
         srv = Server(c)
         srv.name = c.get('name', 'NONAME_' + str(i))
         srv.start()
@@ -152,6 +166,8 @@ def main():
     # Ctrl+C waiting
     while threading.active_count() > 0:
         time.sleep(1)
+
+    GPIO.cleanup()
 
 if __name__ == "__main__":
     main()
