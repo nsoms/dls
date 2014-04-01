@@ -89,14 +89,18 @@ class Server(threading.Thread):
         print self.name, "Executing callback '" + action + "' with card " + card
 
         # execute callback function
-        if func(self.name, card):
-            print "Executed with ret val True"
-            # check we should send signal to GPIO interface
-            send_gpio = self.config.get('open', False)
-            if send_gpio:
-                self.send_gpio()
-        else:
-            print "Executed with ret val False"
+        try:
+            if func(self.name, card):
+                print "Executed with ret val True"
+                # check we should send signal to GPIO interface
+                send_gpio = self.config.get('open', False)
+                if send_gpio:
+                    self.send_gpio()
+            else:
+                print "Executed with ret val False"
+        except Exception as e:
+            print self.name, "Error executing callback: ", str(e), " Exception pass"
+            pass
 
     def process(self):
         while 1:
