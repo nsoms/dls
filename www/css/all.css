@@ -1,0 +1,635 @@
+::-webkit-input-placeholder {
+    color: #999;
+}
+:-moz-placeholder {
+    color: #999;
+}
+:-ms-input-placeholder {
+    color: #999;
+}
+
+select, input:not([type='button']) {
+    border: 1px solid;
+    height: 20px;
+    margin-top: -2px;
+}
+
+body,div, td, #LeftMenu ul li.selected a, a.link, .EditFormCell  {
+    font-family: serif;
+    font-size: 9pt;
+    font-style: normal;
+    margin: 0px;
+    cursor: default;
+    color: #000000;    
+    text-decoration: none;
+}
+a, a.link, a.BaseSubTypeLink, .LikeOption {
+    cursor: pointer;
+    color: #004488;
+    color: #006699;
+    text-decoration: underline;
+    font-size: 9pt;
+    font-weight: bold;
+/*    margin-right: 5px;*/
+}
+a.link, a.BaseSubTypeLink, .LikeOption {
+    margin-right: 5px;
+}
+
+a.Button {
+    text-decoration: none;
+    font-weight: normal;
+}
+
+.pagination {
+	clear:left;
+	padding: 30px 0 50px 0;
+}
+.pagination_container {
+	background:#f1f1f1;
+	position:relative;
+	text-align:center;
+}
+.pagination_container a {
+	display:inline-block;
+	height: 22px;
+	background:#ddd;
+	padding: 0 11px;
+	line-height: 22px;
+	color: #2b2b2b;
+}
+.pagination_container a.nextpage {
+	float:right;
+}
+.pagination_container a.prevpage {
+	float:left;
+}
+.pagination_container a:hover {
+	background:#c6c6c6;
+}
+.pagination_container a.active {
+	background-color: #FFAE00;
+	color: #6B4A02;
+}
+
+.alert {
+    position:fixed;
+    z-index: 9000;
+    display: block;
+    width: 100%;
+    left:0;
+    top:0;
+}
+
+.alert p{
+    display:block;
+    position:relative;
+    min-width: 980px;
+    max-width: 1215px;
+    width: 95%;
+    padding: 15px 0;
+    margin:auto;
+    font-weight: bold;}
+
+.alert .data {
+    border:none;
+}
+
+.alertclose {
+    display:block;
+    height: 23px;
+    width: 24px;
+    position:absolute;
+    right: 0;
+    top: 11px;}
+
+.warning {
+    background:#fff77a;
+    border-bottom: solid 1px #dbd56a;
+    color:#6d6812;}
+
+.info {
+    background:#eefcfe;
+    border-bottom: solid 1px #d6e2e4;
+    color:#83979A;}
+
+.error {
+    background:#ffb284;
+    border-bottom: solid 1px #e5a077;
+    color:#9b6748;}
+
+.success {
+    background:#d7ec98;
+    border-bottom: solid 1px #c1d489;
+    color:#84915f;}
+
+#Top {
+    height: 30px;
+    margin:0;
+    padding: 0;
+    background-color: #cdddff;
+    border-top: solid 5px #7ca5b4;
+/*    // #7ca5b4;*/
+    border-bottom: solid 2px #524565;
+}
+
+#LoginBox, #SearchBox {
+    margin-top: 6px;
+}
+
+#LoginBox {
+    float:left;
+    margin-left: 30px;
+}
+
+#SearchBox {
+    float: right;
+    margin-right: 30px;
+}
+
+#SuperContent {
+    width:100%;
+/*    overflow: auto;*/
+}
+
+#LeftMenu {
+    float: left;
+    margin: 0px;
+    padding: 0px;
+    width:232px;
+    display: inline;
+    background-color: #efefef;
+}
+
+#Content, #TestContent {
+    text-align: left;
+    margin: 0 0 0px 232px;
+    padding: 10px 10px 10px 10px;
+}
+
+#TestContent {
+    margin-left:0px;
+    padding-left:10px;
+}
+
+#LeftMenu ul, #ButtonsUL {
+    list-style: none;
+    margin: 0px;
+    padding: 0;
+    vertical-align: middle;
+}
+
+#LeftMenu ul li{
+    vertical-align: top;
+    margin: 0px 0px 0px 0px;
+    padding: 10px 4px 9px 14px;
+    background-color: #e6eff4;
+    border-left: solid 1px #BBBBBB;
+    border-right: solid 1px #BBBBBB;
+    border-bottom: solid 1px #BBBBBB;
+}
+
+#LeftMenu ul li:hover {
+    background-color: #c6cfd4;
+}
+
+#LeftMenu ul li.selected{
+    vertical-align: top;
+    margin: 0px 0px 0px 0px;
+    padding: 10px 4px 9px 14px;
+    background-color: #FFFFFF;
+    border-left: solid 1px #BBBBBB;
+    border-right: none;
+    border-bottom: solid 1px #BBBBBB;
+}
+
+#Error, #Status {
+    border: 1px solid;
+    margin: 10px 0px;
+    padding:15px 10px 15px 50px;
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    color: #D8000C;
+    background-color: #FFBABA;
+/*    background-image: url('../img/error.png'); */
+    display: none;
+}
+
+#Status {
+    background-image: none;
+    background-color: #BABAFF;
+}
+
+
+.SearchBox, .SearchButton, .Buttons input, .Button {
+    font-family: serif;
+    font-size: 9pt;
+    color: #555555;
+    border: solid 1px #CCCCCC;
+    text-align:left;
+}
+
+.Buttons input[disabled=disabled] {
+    color: #999999;
+    border: solid 1px #ECECEC;
+}
+
+.Button {
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top:2px;
+    padding-bottom: 2px;
+    background-color: #eeeeee;
+}
+
+.Button.UploadButton {
+    margin-bottom:10px;
+    width:150px;
+}
+
+.ButtonWM {
+    margin-left: 20px;
+}
+
+.LocalButtons {
+    margin-left:30px;
+    margin-top: 10px; 
+    margin-bottom: 10px;
+}
+
+.LocalButtons .Button {
+    color:#434343;
+    margin-right: 50px;
+}
+
+.LocalButtons .RedButton {
+    background-color: #ff9797;
+}
+
+.SearchButton {
+    font-size: 8pt;
+    font-weight: bold;
+    background-color: #ddf4b4;
+}
+
+.Title {
+    font-size: 10pt;
+    font-weight: bold;
+    margin-left: 40px;
+    margin-top: 0px;
+}
+
+.Buttons {
+    margin: 10px 10px 10px 60px;
+}
+
+.Data {
+    border: solid 1px #BBBBBB;
+    padding: 5px 10px 5px 10px;
+}
+
+td.edit, .EntityEdit {
+    vertical-align: middle;
+    width: 20px;
+}
+.EntityEdit {
+    width: 30px;
+    padding-left: 10px;
+}
+td.edit a img, .EntityEdit a img{
+    border: none;
+}
+
+img.edit {
+    height: 13px;
+    border: none;
+}
+
+.PersonRow:hover {
+    background-color: #eeeeee;
+}
+
+.Orgs {
+    margin-left:20px;
+    margin-right:20px;
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+.OrgName, .OrgAddr, .OrgInn, .OrgPhone, .OrgGroup, .OrgStaff, .PersonName, .PersonPosition, 
+.PersonBirthday, .RuleName, .RespName, .RespValid, .RespCourse, .OrgRow .EntityEdit, .OrgHeaderRow .EntityEdit,
+.RespNameWide {
+    display: inline;
+    border-left: solid 1px #888888;
+    padding-left: 5px;
+    display: table-cell; 
+    width: 150px;
+    vertical-align:top;
+}
+
+.OrgName, .PersonName, .IsDefault, .RespName, .OrgRow .EntityEdit, .OrgHeaderRow .EntityEdit, .RespNameWide {
+    border-left:none;
+}
+
+.OrgPhone, .OrgGroup, .OrgStaff {
+    width: 70px;
+}
+
+.OrgRow .EntityEdit, .OrgHeaderRow .EntityEdit {
+    width:20px;
+}
+
+.SubEntityRow div.EntityEdit {
+    display: inline;
+    width:20px;
+}
+
+.OrgHeaderRow, .PersonHeaderRow, .RespHeaderRow, .OrgHeaderRow .EntityEdit {
+    color: #555555;
+    border-bottom: solid 1px #888888;
+    margin-top:5px;
+}
+
+.Persons, .SubEntities {
+    margin-left: 20px;
+    margin-top:5px;
+    margin-bottom: 5px;
+    border: solid 1px #888888;
+    background-color: #fafafa;
+    padding: 5px;
+}
+
+.PersonRow, .SubEntityRow {
+/*    margin-top: 2px;*/
+    border-bottom: dotted #cccccc 1px;
+}
+
+.SubEntityRow:hover {
+    background-color: #f9f9f9;
+}
+
+.PersonName, .PersonPosition {
+    width: 250px;
+}
+
+#EditFormWide label, #EditForm label, #EditPersonAtt label, #AddPersonForm label, .EditForm label{
+    display: inline-block;
+    width: 120px;
+    margin-top: 3px;
+    vertical-align: top;
+}
+
+#EditFormWide label {
+    width: 190px;
+}
+
+
+#EditPersonAtt label {
+    width:150px;
+}
+
+.EditFormCell {
+    width: 300px;
+    display: inline-block;
+/*    border-bottom: solid 1px #aaa;*/
+    color: #555555;
+}
+
+.Letter {
+    width: 10px;
+}
+
+.RuleName {
+    width: 100%;
+    overflow:auto;
+    display: table-cell;
+}
+
+div.SubEntityRow:hover, div.RespRow:hover {
+    background-color: #f6f6f6;
+}
+
+.RespRow {
+    padding: 2px;
+    border-bottom: solid 1px #888888;
+}
+
+.IsDefault {
+    float: left;
+    width:20px;
+    display: inline;
+    text-align: center;
+}
+
+.RespName, .RespCourse {
+    width: 280px;
+}
+
+.RespValid {
+    width: 40px;
+}
+
+#AvailRules, #SelRules, #AvailResps {
+    width:100%;
+    border:solid 1px #aaa;
+    height: 80px;
+    overflow:auto;
+}
+
+#AvailResps {
+    height:60px;
+}
+
+.LikeOption, .NewOption {
+    font-weight:normal;
+    text-decoration:none;
+}
+.LikeOption:hover {
+    background-color:#e0e0e0;
+}
+
+.NewOption {
+    text-decoration:underline;
+}
+
+.TestTypeState {
+    display: inline-block;
+    width:100px;
+    border-right:solid 1px #555555;
+    padding-right:10px;
+    margin-right:10px;
+}
+
+.TestResultCheck, .TestResultQuestion, .TestResultRAns, .TestResultCAns {
+    width:300px;
+    border-right:solid 1px #555555;
+    padding-left:3px;
+    padding-right:3px;
+    display: table-cell; 
+    vertical-align:top;
+}
+.TestResultCheck { width:60px; }
+
+.TestResultCAns {
+    background-color: #ff9797;
+}
+
+#AvailTickets, #SelectedTickets {
+    display:inline;
+    float:left;
+    width:370px;
+    border:solid 1px #999999;
+}
+
+#SelectedTickets {
+    float:right;
+}
+
+#AvailTickets select, #SelectedTickets select {
+    width:100%;
+} 
+
+#EditUser label {
+    display: inline-block;
+    margin-top: 3px;
+    width: 100px;
+}
+.RespNameWide {
+    width:auto;
+}
+
+.TestResultTable {
+    text-align: center;
+    border-collapse: collapse;
+}
+.TestResultTable td {
+    border: 1px solid #000000;
+    padding: 2px;
+}
+.TestResultTable th {
+    text-align:center;
+}
+
+.TestResultTable .TestResultTableQ {
+    vertical-align: middle;
+    text-align: center;
+}
+
+.TestResultTable .TestResultTableA {
+    vertical-align: middle;
+    text-align: justify;
+}
+
+.TestResultTable .Number {
+    width: 5mm;
+}
+.TestResultTable .Question {
+    width: 5.5cm;
+}
+.TestResultTable .Answer {
+    width: 10cm;
+}
+.TestResultTable .Result {
+    width: 2cm;
+}
+
+.QuestionRow {
+    padding: 10px 0;
+}
+
+
+.Field {
+    border-bottom: solid 1px #efefef;
+    padding:10px 0px;
+    overflow: auto;
+}
+/*
+.Field:last-of-type {
+    border-bottom: none;
+}*/
+
+.Field label, .Field input, .Field select {
+    display: block;
+    float:left;
+}
+
+.Field input[type='button'] {
+    margin-top: -2px;
+    margin-left: 40px;
+}
+
+.Field label {
+    width: 150px;
+    color: #474a4b;
+}
+
+
+/********************************************************/
+
+.EntityRow {
+    margin: 5px 0px;
+}
+
+.EntityRow a {
+/*    margin-right: 5px;
+    color: #222222;
+    margin-left: 20px;
+    font-weight: normal;
+    text-decoration: none; */
+}
+
+.EntityRow a.Control {
+    margin-left: 10px;
+    font-weight: normal;
+    font-family: monospace;
+    color: #7c85a4;
+    text-decoration: none;
+}
+.EntityRow a:hover {
+    color: #444455;
+}
+
+.OnlineListTable tr, .OnlineListTable td {
+    cursor: pointer !important;
+}
+
+.OnlineListTable td.Testing {
+    padding-left: 20px;
+    background: url("../img/testing.png") no-repeat scroll left center transparent;
+}
+.OnlineListTable td.NotPassed, .FailedCourse {
+    padding-left: 20px;
+    background: url("../img/test_fail.png") no-repeat scroll left top transparent;
+}
+.OnlineListTable td.Passed, .PassedCourse {
+    padding-left: 20px;
+    background: url("../img/preview.png") no-repeat scroll left top transparent;
+}
+
+.Groups, .PersonsList, .Organisations, .PersonTests, .Examiners, .Commissions {
+    margin-left: 30px;
+}
+
+.CheckImg {
+    margin-left:20px;
+}
+
+.mandatory:before {
+    content: "*";
+    color: #D8000C;
+    margin-right: 5px;
+}
+
+.not_filled {
+    background-color: #FFEEEE;
+}
+
+.PersonElement span {
+    color: #555555;
+}
+
+.CommHead:before {
+    content: "*";
+    color: #D8000C;
+    margin-right: 5px;
+}
