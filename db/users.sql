@@ -1,3 +1,40 @@
+/* returns list of groups for given params */
+CREATE OR REPLACE FUNCTION
+    check_pwd (
+        in_login      text,
+        in_passwd     text
+) RETURNS TABLE (
+    id              int,
+    name            text,                                   -- имя
+    login           name,                                   -- логин для авторизации
+    role_id         int,                                    -- guest по-умолчанию
+    rolename        name,                                   -- роль
+    groups_see      bool,
+    groups_mod      bool,
+    users_see       bool,
+    users_all_see   bool,
+    users_mod       bool,
+    users_role_set  bool
+) AS $$
+    SELECT
+        users.id,
+        surname,
+        login,
+        role_id,
+        rolename,
+        groups_see,
+        groups_mod,
+        users_see,
+        users_all_see,
+        users_mod,
+        users_role_set
+    FROM users
+        JOIN roles ON roles.id=users.role_id
+        WHERE
+            NOT is_disabled
+            AND login = $1 AND passwd = $2;
+$$ LANGUAGE SQL STABLE;
+
 
 /* returns list of groups for given params */
 CREATE OR REPLACE FUNCTION
@@ -6,7 +43,8 @@ CREATE OR REPLACE FUNCTION
         in_id       int,
         in_card_number  text,   -- check equality
         in_surname      text,   -- check substring
-        in_name         text    -- check substring
+        in_name         text,   -- check substring
+        in_groups       int[]   -- array of groups
 ) RETURNS TABLE (
     id              int,
     card_number     text,                                   -- номер карты
@@ -19,7 +57,7 @@ CREATE OR REPLACE FUNCTION
     reg_form        text,                                   -- класс регистрации
     login           name,                                   -- логин для авторизации
     role_id         int,                                    -- guest по-умолчанию
-    rolename        text,                                   -- роль
+    rolename        name,                                   -- роль
     is_disabled     bool                                    -- включен/выключен
 ) AS $$
     SELECT
@@ -37,50 +75,43 @@ CREATE OR REPLACE FUNCTION
         (SELECT rolename FROM roles WHERE id=role_id),
         is_disabled
      FROM users
+         JOIN user_groups ON user_groups.user_id=users.id
         WHERE
-            (allowed_users_see(viewer_id, id) AND NOT is_disabled)
-            AND allowed_users_all_see(viewer_id, id)
-            AND (in_id IS NULL AND TRUE OR id=$1)
-            AND (in_name IS NULL AND TRUE OR name ILIKE '%' || in_name || '%')
-            AND (allowed_groups)
-        ORDER BY name;
+            (allowed_users_see($1, id) AND NOT is_disabled)
+            AND allowed_users_all_see($1, id)
+            AND ($2 IS NULL AND TRUE OR id=$2)
+            AND ($3 IS NULL AND TRUE OR card_number ILIKE '%' || $3 || '%')
+            AND ($4 IS NULL AND TRUE OR surname ILIKE '%' || $4 || '%')
+            AND ($5 IS NULL AND TRUE OR name ILIKE '%' || $5 || '%')
+            AND ($6 IS NULL AND TRUE OR user_groups.group_id = ANY($6))
+        ORDER BY surname, name, middlename;
 $$ LANGUAGE SQL STABLE;
+
 
 /* creates new groups with given params */
 CREATE OR REPLACE FUNCTION
     user_add (
-        viewer_id   int,
-        in_card_number  text,
-        in_surname      text,
-        in_name         text,
-        in_middlename   text,
-        in_pic_name     text,
-        in_birthday     date,
-        in_reg_form     text,
-        in_role_id      int
+        viewer_id       int,    -- $1
+        in_card_number  text,   -- $2
+        in_surname      text,   -- $3
+        in_name         text,   -- $4
+        in_middlename   text,   -- $5
+        in_pic_name     text,   -- $6
+        in_birthday     date,   -- $7
+        in_reg_form     text,   -- $8
+        in_group_ids    int[]   -- $9
 ) RETURNS int AS $$
-/*  id              serial PRIMARY KEY,
-    card_number     text,                                   -- номер карты
-    surname         text not null,                          -- фамилия
-    name            text not null,                          -- имя
-    middlename      text not null,                          -- отчество
-    pic_name        text,                                   -- имя файла фотографии
-    birthday        date not null default '1970-01-01',     -- дата рождения
-    register        timestamp with time zone default now(), -- дата регистрации
-    reg_form        text,                                   -- класс регистрации
-    login           name,                                   -- логин для авторизации
-    passwd          text,                                   -- пароль
-    role_id         int default 3,                          -- guest по-умолчанию
-    is_disabled     bool default false,                     -- включен/выключен
- */
     DECLARE
         allowed bool;
         res int;
     BEGIN
         allowed := allowed_users_mod(viewer_id, NULL);
 
+        RAISE LOG '%', $9;
+        RAISE LOG '%, %', array_length($9, 1), array_to_string($9, ', ');
+
         IF NOT allowed THEN
-            RETURN -2;   -- not enough rights to modify groups
+            RETURN -3;   -- not enough rights to modify groups
         END IF;
 
         INSERT INTO users(
@@ -90,8 +121,7 @@ CREATE OR REPLACE FUNCTION
                 middlename,
                 pic_name,
                 birthday,
-                reg_form,
-                role_id
+                reg_form
             ) VALUES (
                 in_card_number,
                 in_surname,
@@ -99,10 +129,12 @@ CREATE OR REPLACE FUNCTION
                 in_middlename,
                 in_pic_name,
                 in_birthday,
-                in_reg_form,
-                in_role_id
+                in_reg_form
             )
             RETURNING id INTO res;
+
+        INSERT INTO user_groups (user_id, group_id)
+            SELECT res, UNNEST(in_group_ids);
 
         RETURN res;
     EXCEPTION
@@ -113,7 +145,8 @@ CREATE OR REPLACE FUNCTION
     END;
 $$ LANGUAGE plpgsql VOLATILE;
 
-/* modyfies user with given params */
+
+/* modifies user with given params */
 CREATE OR REPLACE FUNCTION
     user_mod (
         viewer_id   int,
@@ -125,22 +158,8 @@ CREATE OR REPLACE FUNCTION
         in_pic_name     text,
         in_birthday     date,
         in_reg_form     text,
-        in_role_id      int
+        in_group_ids    int[]
 ) RETURNS int AS $$
-/*  id              serial PRIMARY KEY,
-    card_number     text,                                   -- номер карты
-    surname         text not null,                          -- фамилия
-    name            text not null,                          -- имя
-    middlename      text not null,                          -- отчество
-    pic_name        text,                                   -- имя файла фотографии
-    birthday        date not null default '1970-01-01',     -- дата рождения
-    register        timestamp with time zone default now(), -- дата регистрации
-    reg_form        text,                                   -- класс регистрации
-    login           name,                                   -- логин для авторизации
-    passwd          text,                                   -- пароль
-    role_id         int default 3,                          -- guest по-умолчанию
-    is_disabled     bool default false,                     -- включен/выключен
- */
     DECLARE
         allowed bool;
         res int;
@@ -148,32 +167,104 @@ CREATE OR REPLACE FUNCTION
         allowed := allowed_users_mod(viewer_id, NULL);
 
         IF NOT allowed THEN
-            RETURN -2;   -- not enough rights to modify groups
+            RETURN -3;   -- not enough rights to modify users
         END IF;
 
-        INSERT INTO users(
+        UPDATE users
+            SET (
                 card_number,
                 surname,
                 name,
                 middlename,
                 pic_name,
                 birthday,
-                reg_form,
+                reg_form
+            ) = (
+                in_card_number,
+                in_surname,
+                in_name,
+                in_middlename,
+                in_pic_name,
+                in_birthday,
+                in_reg_form
+            )
+            WHERE id=in_id
+            RETURNING id INTO res;
+
+            DELETE FROM user_groups WHERE user_id = res;
+            INSERT INTO user_groups SELECT res, group_id FROM (SELECT UNNEST(in_group_ids) AS group_id) as AA;
+
+        RETURN res;
+    EXCEPTION
+        WHEN unique_violation THEN
+            RETURN -1;     -- unique violation
+        WHEN OTHERS THEN
+            RETURN -1000;  -- unknown error
+    END;
+$$ LANGUAGE plpgsql VOLATILE;
+
+
+/* modifies user sets login, password and role */
+CREATE OR REPLACE FUNCTION
+    user_set_login (
+        viewer_id   int,
+        in_id       int,
+        in_login    text,
+        in_passwd   text,
+        in_role_id  int
+) RETURNS int AS $$
+    DECLARE
+        allowed bool;
+        res int;
+    BEGIN
+        allowed := allowed_users_role_set(viewer_id, NULL);
+
+        IF NOT allowed THEN
+            RETURN -3;   -- not enough rights to modify users
+        END IF;
+
+        UPDATE users
+            SET (
                 login,
                 passwd,
                 role_id
-            ) VALUES (
-                in_card_number
-                in_surname
-                in_name
-                in_middlename
-                in_pic_name
-                in_birthday
-                in_reg_form
-                in_login
-                in_passwd
+            ) = (
+                in_login,
+                in_passwd,
                 in_role_id
             )
+            WHERE id=in_id
+            RETURNING id INTO res;
+
+        RETURN res;
+    EXCEPTION
+        WHEN unique_violation THEN
+            RETURN -1;     -- unique violation
+        WHEN OTHERS THEN
+            RETURN -1000;  -- unknown error
+    END;
+$$ LANGUAGE plpgsql VOLATILE;
+
+
+/* disables or enables user */
+CREATE OR REPLACE FUNCTION
+    user_endisable (
+    viewer_id   int,
+    in_id       int
+) RETURNS int AS $$
+    DECLARE
+        allowed bool;
+        res int;
+    BEGIN
+        allowed := allowed_users_role_set(viewer_id, NULL);
+
+        IF NOT allowed THEN
+            RETURN -3;   -- not enough rights to modify users
+        END IF;
+
+        UPDATE users
+            SET is_disabled = NOT is_disabled
+            WHERE id=in_id
             RETURNING id INTO res;
 
         RETURN res;

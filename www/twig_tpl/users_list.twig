@@ -1,0 +1,50 @@
+{# params: users #}
+
+{#
+ 0    id              int,
+ 1    card_number     text,                                   -- номер карты
+ 2    surname         text,                                   -- фамилия
+ 3    name            text,                                   -- имя
+ 4    middlename      text,                                   -- отчество
+ 5    pic_name        text,                                   -- имя файла фотографии
+ 6    birthday        date,                                   -- дата рождения
+ 7    register        timestamp with time zone,               -- дата регистрации
+ 8    reg_form        text,                                   -- класс регистрации
+ 9    login           name,                                   -- логин для авторизации
+10    role_id         int,                                    -- guest по-умолчанию
+11    rolename        name,                                   -- роль
+12    is_disabled     bool                                    -- включен/выключен
+
+#}
+<table width=100% border=1 cellpadding=4 cellspacing=0>
+    {% for user in users %}
+        {% if loop.first %}
+    <thead>
+    <tr style="font-weight: bold;">
+        <td>ФИО</td>
+        <td>Номер карты</td>
+        <td>Дата рождения</td>
+        <td>Зарегистрирован</td>
+        <td>Класс регистрации</td>
+        <td>Роль</td>
+        <td>Отключен</td>
+    </tr>
+    </thead>
+    <tbody>
+        {% endif %}
+        {% set id = user[0] %}
+        <tr style="vertical-align:top" class="PersonRow EntityRow">
+            <td><a href="#" class="link" data-user-id="{{ id }}">{{ user[2] }} {{ user[3] }} {{ user[4] }}</a></td>
+            <td>{{ user[1] }} &nbsp;</td>
+            <td>{{ user[6] }}</td>
+            <td>{{ user[7] }}</td>
+            <td>{{ user[8] }}</td>
+            <td>{{ user[11] }}</td>
+            <td>{{ user[12] }}</td>
+        </tr>
+    {% else %}
+        <tbody>
+        <tr><td>Не найдено удовлетворяющих запросу персон</td></tr>
+    {% endfor %}
+    </tbody>
+</table>

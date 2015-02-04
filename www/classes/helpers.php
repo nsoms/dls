@@ -311,4 +311,9 @@ function GetNodeValue( $root, $nodeName )
     return $res;
 }
 
+function str_to_dbdate($str)
+{
+    list($day, $month, $year) = preg_split('/\./', $str);
+    return $year . '-' . $month . '-' . $day;
+}
 ?>

@@ -187,13 +187,61 @@ class DB {
             $this->get_con(),
             'SELECT * FROM check_pwd($1,$2)', 
             array($username,pwhash($password))) or $this->error();
+
         $row = pg_fetch_row($res);
         if (!$row) 
             return null;
-        $row[0] = DB::parse_record($row[0]);
+        //$row[0] = DB::parse_record($row[0]);
         return User::from_row($row);
     }
-    
+
+
+    /************************************************
+     * GROUPS FUNCTIONS
+     */
+    public function groups_get($user_id, $id, $name)
+    {
+        $res = pg_query_params(
+            $this->get_con(),
+            'SELECT * FROM groups_get($1, $2, $3)',
+            array($user_id, $id, $name)) or $this->error();
+        return $this->all_rows($res);
+    }
+
+    public function group_add($user_id, $name)
+    {
+        $res = pg_query_params(
+            $this->get_con(),
+            'SELECT * FROM group_add($1, $2)',
+            array($user_id, $name)) or $this->error();
+        return $this->one_val($res);
+    }
+
+
+    /************************************************
+     * USERS FUNCTIONS
+     */
+
+    public function user_add($user_id, $card, $surname, $name, $middle, $pic_name, $bday, $reg_form, $group_ids)
+    {
+        $res = pg_query_params(
+            $this->get_con(),
+            'SELECT * FROM user_add($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+            array($user_id, $card, $surname, $name, $middle, $pic_name, $bday, $reg_form, DB::pass_array($group_ids))) or $this->error();
+        return $this->one_val($res);
+    }
+
+    public function users_get ( $user_id, $id, $card, $surname, $name, $groups ){
+        $res = pg_query_params(
+            $this->get_con(),
+            'SELECT * FROM users_get($1, $2, $3, $4, $5, $6)',
+            array($user_id, $id, $card, $surname, $name, $groups)) or $this->error();
+        return $this->all_rows($res);
+    }
+
+    /************************************************
+     * ROLES FUNCTIONS
+     */
     public function get_roles($user_id) {
         $res = pg_query_params(
             $this->get_con(),

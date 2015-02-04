@@ -51,16 +51,13 @@ if (isset($_GET['login_required']))
 
 if (isset($_POST['l'])&&isset($_POST['p'])) {
     require_once(ROOT.'classes/db.php');
-    $u = $db->check_auth($_POST['l'],$_POST['p']);    
-    if ($u==null) 
+    $u = $db->check_auth($_POST['l'],$_POST['p']);
+    if ($u==null)
         write_form(-2);
     $user = $u;
     $user->set_session();
-    if( $user->role_name == 'sa' || $user->role_name == 'pa' || $user->role_name == 'admin' || $user->role_name == 'online' )
-        if( !HTML::ip_address_is_local() )
-            redir_logout();
     redir();
-    exit(0);    
+    exit(0);
 }
 
 if (isset($_GET['action'])) 

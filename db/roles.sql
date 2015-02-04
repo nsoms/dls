@@ -47,3 +47,13 @@ CREATE OR REPLACE FUNCTION
         FROM roles
         WHERE id=(SELECT role_id FROM users WHERE id=in_viewer_id);
 $$ LANGUAGE SQL STABLE;
+
+CREATE OR REPLACE FUNCTION
+    allowed_users_role_set(
+        in_viewer_id    int,
+        in_id           int
+) RETURNS bool AS $$
+    SELECT users_role_set
+        FROM roles
+        WHERE id=(SELECT role_id FROM users WHERE id=in_viewer_id);
+$$ LANGUAGE SQL STABLE;

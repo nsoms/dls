@@ -14,6 +14,11 @@ echo "Creating '$DB' database..."
 su - postgres -c "createdb -O $DB $DB"
 
 psql -h localhost -f scheme.sql $DB $DB
+psql -h localhost -f functions.sql $DB $DB
+
+psql -h localhost -f roles.sql $DB $DB
+psql -h localhost -f groups.sql $DB $DB
+psql -h localhost -f users.sql $DB $DB
 
 # tests
 #psql -h localhost -f test.sql $DB $DB

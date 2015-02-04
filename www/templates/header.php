@@ -7,74 +7,14 @@
 
     $menu = array(
         array(
-            'pagename' => 'td.php',
-            'caption' => 'Аттестации',
-            'show' => $user->trday_see
-        ),
-        array(
-            'pagename' => 'register.php',
-            'caption' => 'Регистрация',
-            'show' => $user->register_see
-        ),
-        array(
-            'pagename' => 'commissions.php',
-            'caption' => 'Комиссии',
-            'show' => $user->comm_see
-        ),
-/*        array(
-            'pagename' => 'roles.php',
-            'caption' => 'Роли',
-            'show' => $user->see_role
-        ),*/
-        array(
-            'pagename' => 'orgs.php',
-            'caption' => 'Организации',
-            'show' => $user->orgs_see
-        ),
-        array(
-            'pagename' => 'basetypes.php',
-            'caption' => 'Области аттестации',
-            'show' => $user->rules_see
-        ),
-        array(
-            'pagename' => 'courses.php',
-            'caption' => 'Курсы вопросов',
-            'show' => $user->quest_see
-        ),
-        array(
-            'pagename' => 'duties.php',
-            'caption' => 'Платежи',
-            'show' => $user->duties_see
-        ),
-        array(
             'pagename' => 'users.php',
-            'caption' => 'Пользователи',
-            'show' => 't'
+            'caption' => 'Персоны',
+            'show' => $user->users_see
         ),
         array(
-            'pagename' => 'testing/online_test.php',
-            'caption' => 'Тестирование',
-            'show' => $user->testing_see
-        ),
-        array(
-            'pagename' => 'online_activity.php',
-            'caption' => 'Активность тестирования',
-            'show' => $user->activity_see
-        ),
-        array(
-            'pagename' => 'history.php',
-            'caption' => 'История действий',
-            'show' => $user->log_see
-        ),
-        array(
-            'pagename' => 'reports.php',
-            'caption' => 'Отчеты',
-            'show' => $user->reports_see
-        ),
-        array(
-            'pagename' => 'search.php',
-            'caption' => 'Поиск',
-            'show' => $user->trday_see
+            'pagename' => 'groups.php',
+            'caption' => 'Группы',
+            'show' => $user->groups_see
         )
     );
 ?>
@@ -97,8 +37,7 @@
             HTML::js('var AUTHENTICATED='.($user->is_anonymous()?'false;':'true;'));
             
             HTML::js('');
-            HTML::include_js(ROOT.'js/d_rights.js');
-            //HTML::include_js(ROOT.'js/search.js');
+            HTML::include_js(ROOT.'js/common.js');
         ?>
         <?php HTML::write_css_files(); ?>
         <?php HTML::write_js_files(); ?>

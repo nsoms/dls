@@ -7,12 +7,14 @@ if( !$user || $user->is_anonymous() )
 {
     $redirect=ROOT.'login.php';
     header ('Location: '.$redirect);
+    //print_r($user);
     exit(0);
 }
- 
-$redirect=ROOT.'td.php';
+
+$redirect=ROOT.'users.php';
 header ('Location: '.$redirect);
 exit(0);
+
 HTML::set_title('');
 HTML::header();
 HTML::write( "Добро пожаловать!!!<br/>");

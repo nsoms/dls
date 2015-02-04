@@ -6,98 +6,50 @@ require_once(ROOT.'classes/db.php');
 class User {
     public $id;
     public $name;
-    public $address;
     public $login;
-    public $inn;
-    public $phone;
     public $role;
     public $role_name;
-    public $parent_id;
-    public $parent_name;
-    
-    public $see_role;
-    public $orgs_see;
-    public $rules_see;
-    public $quest_see;
-    public $tickt_see;
-    public $cours_see;
-    public $comm_see;
-    public $trday_see;
-    public $trday_mod;
-    public $register_see;
-    public $register_mod;
-    public $testing_see;
-    public $activity_see;
-    public $duties_see;
-    public $log_see;
-    public $test_pass;
-    public $reports_see;
-    
+
+    public $groups_see;
+    public $groups_mod;
+    public $users_see;
+    public $users_all_see;
+    public $users_mod;
+    public $users_role_set;
+
+
     public function __construct($id,$name,$role,$rolename, $login,
-                    $see_role, $orgs_see, $rules_see, $quest_see, $tickt_see, $cours_see,
-                    $comm_see, $trday_see, $trday_mod, 
-                    $register_see, $register_mod,
-                    $testing_see, $activity_see, $duties_see, $log_see, $test_pass, $reports_see) {
+                                $groups_see, $groups_mod,
+                                $users_see, $users_all_see,
+                                $users_mod, $users_role_set) {
         $this->id = $id;
         $this->name = $name;
         $this->login = $login;
         $this->role = $role;
-        $this->role_name = $rolename;
-        $this->address = $this->inn = $this->phone = $this->parent_id = null;
-        $this->see_role = $see_role; 
-        $this->orgs_see = $orgs_see;
-        $this->rules_see = $rules_see;
-        $this->quest_see = $quest_see;
-        $this->tickt_see = $tickt_see;
-        $this->cours_see = $cours_see;
-        $this->comm_see = $comm_see;
-        $this->trday_see = $trday_see;
-        $this->trday_mod = $trday_mod;
-        $this->register_see = $register_see;
-        $this->register_mod = $register_mod;
-        $this->testing_see = $testing_see;
-        $this->activity_see = $activity_see;
-        $this->duties_see = $duties_see;
-        $this->log_see = $log_see;
-        $this->test_pass = $test_pass;
-        $this->reports_see = $reports_see;
+        $this->role_name        = $rolename;
+        $this->groups_see       = $groups_see;
+        $this->groups_mod       = $groups_mod;
+        $this->users_see        = $users_see;
+        $this->users_all_see    = $users_all_see;
+        $this->users_mod        = $users_mod;
+        $this->users_role_set   = $users_role_set;
     }
     
     public static function from_row($row) {
-        //print_r($row);
-        $u = new User(0,null,null,null,null,'f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f', 'f');
-        list(
-            $a,
-            $u->see_role, 
-            $u->orgs_see, 
-            $u->rules_see,
-            $u->quest_see,
-            $u->tickt_see,
-            $u->cours_see,
-            $u->comm_see,
-            $u->trday_see,
-            $u->trday_mod,
-            $u->register_see,
-            $u->register_mod,
-            $u->testing_see,
-            $u->activity_see,
-            $u->duties_see,
-            $u->log_see,
-            $u->test_pass,
-            $u->reports_see
-        ) = $row;
+        $u = new User(0,null,null,null,null,'f','f','f','f','f','f');
         list(
             $u->id,
             $u->name,
-            $u->address,
             $u->login,
-            $u->inn,
-            $u->phone,
             $u->role,
             $u->role_name,
-            $u->parent_id,
-            $u->parent_name
-        ) = $a;
+            $u->groups_see,
+            $u->groups_mod,
+            $u->users_see,
+            $u->users_all_see,
+            $u->users_mod,
+            $u->users_role_set
+        ) = $row;
         return $u;
     }
     
@@ -105,44 +57,30 @@ class User {
         Session::start();
         if (!isset($_SESSION['user_id'])) return User::create_anonymous();
         if (!isset($_SESSION['user_name'])) return User::create_anonymous();
+        if (!isset($_SESSION['user_login'])) return User::create_anonymous();
         if (!isset($_SESSION['user_role'])) return User::create_anonymous();
         if (!isset($_SESSION['user_role_name'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_see_role'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_orgs_see'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_rules_see'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_quest_see'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_tickt_see'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_cours_see'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_comm_see'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_trday_see'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_trday_mod'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_register_see'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_register_mod'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_testing_see'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_activity_see'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_duties_see'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_log_see'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_test_pass'])) return User::create_anonymous();
-        if (!isset($_SESSION['user_reports_see'])) return User::create_anonymous();
-        if (!array_key_exists('user_login',$_SESSION)) return User::create_anonymous();
-        return new User($_SESSION['user_id'],$_SESSION['user_name'],
-                        $_SESSION['user_role'],$_SESSION['user_role_name'],
+        if (!isset($_SESSION['user_groups_see'])) return User::create_anonymous();
+        if (!isset($_SESSION['user_groups_mod'])) return User::create_anonymous();
+        if (!isset($_SESSION['user_users_see'])) return User::create_anonymous();
+        if (!isset($_SESSION['user_users_all_see'])) return User::create_anonymous();
+        if (!isset($_SESSION['user_users_mod'])) return User::create_anonymous();
+        if (!isset($_SESSION['user_users_role_set'])) return User::create_anonymous();
+
+        return new User($_SESSION['user_id'], $_SESSION['user_name'],
+                        $_SESSION['user_role'], $_SESSION['user_role_name'],
                         $_SESSION['user_login'],
-                        $_SESSION['user_see_role'], $_SESSION['user_orgs_see'], 
-                        $_SESSION['user_rules_see'], $_SESSION['user_quest_see'],
-                        $_SESSION['user_tickt_see'], $_SESSION['user_cours_see'],
-                        $_SESSION['user_comm_see'], 
-                        $_SESSION['user_trday_see'],$_SESSION['user_trday_mod'],
-                        $_SESSION['user_register_see'],$_SESSION['user_register_mod'],
-                        $_SESSION['user_testing_see'], $_SESSION['user_activity_see'],
-                        $_SESSION['user_duties_see'], $_SESSION['user_log_see'],
-                        $_SESSION['user_test_pass'],
-                        $_SESSION['user_reports_see']
+                        $_SESSION['user_groups_see'],
+                        $_SESSION['user_groups_mod'],
+                        $_SESSION['user_users_see'],
+                        $_SESSION['user_users_all_see'],
+                        $_SESSION['user_users_mod'],
+                        $_SESSION['user_users_role_set']
                         );
     }
-    
+
     public static function create_anonymous() {
-        return new User(0,'',0,null,null,'f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f');
+        return new User(0,'',0,null,null,'f','f','f','f','f','f');
     }
     
     public function is_anonymous() {
@@ -160,23 +98,12 @@ class User {
         $_SESSION['user_login'] = $this->login;
         $_SESSION['user_role'] = $this->role;
         $_SESSION['user_role_name'] = $this->role_name;
-        $_SESSION['user_see_role'] = $this->see_role;
-        $_SESSION['user_orgs_see'] = $this->orgs_see;
-        $_SESSION['user_rules_see'] = $this->rules_see;
-        $_SESSION['user_quest_see'] = $this->quest_see;
-        $_SESSION['user_tickt_see'] = $this->tickt_see;
-        $_SESSION['user_cours_see'] = $this->cours_see;
-        $_SESSION['user_comm_see'] = $this->comm_see;
-        $_SESSION['user_trday_see'] = $this->trday_see;
-        $_SESSION['user_trday_mod'] = $this->trday_mod;
-        $_SESSION['user_register_see'] = $this->register_see;
-        $_SESSION['user_register_mod'] = $this->register_mod;
-        $_SESSION['user_testing_see'] = $this->testing_see;
-        $_SESSION['user_activity_see'] = $this->activity_see;
-        $_SESSION['user_duties_see'] = $this->duties_see;
-        $_SESSION['user_log_see'] = $this->log_see;
-        $_SESSION['user_test_pass'] = $this->test_pass;
-        $_SESSION['user_reports_see'] = $this->reports_see;
+        $_SESSION['user_groups_see']     = $this->groups_see;
+        $_SESSION['user_groups_mod']     = $this->groups_mod;
+        $_SESSION['user_users_see']      = $this->users_see;
+        $_SESSION['user_users_all_see']  = $this->users_all_see;
+        $_SESSION['user_users_mod']      = $this->users_mod;
+        $_SESSION['user_users_role_set'] = $this->users_role_set;
     }
     
     public function require_login() {
@@ -213,9 +140,6 @@ class User {
         exit(0);
     }
 
-    public function allowed_log_see() {
-        return ($this->log_see === 't');
-    }
 }
 
 ?>

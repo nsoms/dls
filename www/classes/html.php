@@ -247,13 +247,6 @@ class HTML {
         if (!HTML::$twig_js_initialized) {
             HTML::$twig_js_initialized = true;
             HTML::$js[] = "Twig.getGlobals()['ROOT']=''; "
-                . "Twig.setFilter('get_course_name',get_course_name); "
-                . "Twig.setFilter('get_testing_time',get_testing_time); "
-                . "Twig.setFilter('get_testing_length',get_testing_length); "
-                . "Twig.setFilter('print_typed_val',print_typed_val); "
-                . "Twig.setFilter('print_test_types',print_test_types); "
-                . "Twig.setFilter('get_twig_datetime',get_twig_datetime); "
-                . "Twig.setFilter('get_twig_date',get_twig_date); "
             ;
         }
         $fname = ROOT.'templates/twig_js/'.$name.'.js';
