@@ -24,6 +24,10 @@ class Sanitize {
         if ($val===null) return null;
         return str_replace(array('"',"'"),'',$val);
     }
+
+    public static function clean($str) {
+        return htmlentities($str);
+    }
 }
 
 class Util {

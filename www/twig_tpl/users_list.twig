@@ -16,18 +16,18 @@
 12    is_disabled     bool                                    -- включен/выключен
 
 #}
-<table width=100% border=1 cellpadding=4 cellspacing=0>
+<table width=100% class="table table-striped">
     {% for user in users %}
         {% if loop.first %}
     <thead>
     <tr style="font-weight: bold;">
-        <td>ФИО</td>
-        <td>Номер карты</td>
-        <td>Дата рождения</td>
-        <td>Зарегистрирован</td>
-        <td>Класс регистрации</td>
-        <td>Роль</td>
-        <td>Отключен</td>
+        <th>ФИО</th>
+        <th>Номер карты</th>
+        <th>Дата рождения</th>
+        <th>Зарегистрирован</th>
+        <th>Класс регистрации</th>
+        <th>Роль</th>
+        <th>Отключен</th>
     </tr>
     </thead>
     <tbody>

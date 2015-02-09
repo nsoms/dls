@@ -63,6 +63,8 @@ CREATE TABLE groups(
     name            text
 );
 
+INSERT INTO groups(name) VALUES ('Ученик'), ('Учитель'), ('Выпускник');
+
 -- талица отнесенности пользователей к группе
 CREATE TABLE user_groups(
     user_id         int,

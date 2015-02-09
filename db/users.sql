@@ -32,11 +32,12 @@ CREATE OR REPLACE FUNCTION
         JOIN roles ON roles.id=users.role_id
         WHERE
             NOT is_disabled
-            AND login = $1 AND passwd = $2;
+            AND login = $1 AND passwd = $2
 $$ LANGUAGE SQL STABLE;
 
 
 /* returns list of groups for given params */
+DROP FUNCTION IF EXISTS users_get ( int, int, text, text, text, int[] );
 CREATE OR REPLACE FUNCTION
     users_get (
         viewer_id   int,
@@ -58,9 +59,10 @@ CREATE OR REPLACE FUNCTION
     login           name,                                   -- логин для авторизации
     role_id         int,                                    -- guest по-умолчанию
     rolename        name,                                   -- роль
-    is_disabled     bool                                    -- включен/выключен
+    is_disabled     bool,                                   -- включен/выключен
+    group_ids       int[]                                   -- группы пользователя
 ) AS $$
-    SELECT
+    SELECT DISTINCT
         users.id,
         card_number,
         surname,
@@ -73,18 +75,19 @@ CREATE OR REPLACE FUNCTION
         login,
         role_id,
         (SELECT rolename FROM roles WHERE id=role_id),
-        is_disabled
+        is_disabled,
+        ARRAY(SELECT group_id FROM user_groups WHERE user_id = users.id)
      FROM users
          JOIN user_groups ON user_groups.user_id=users.id
         WHERE
             (allowed_users_see($1, id) AND NOT is_disabled)
             AND allowed_users_all_see($1, id)
             AND ($2 IS NULL AND TRUE OR id=$2)
-            AND ($3 IS NULL AND TRUE OR card_number ILIKE '%' || $3 || '%')
+            AND ($3 IS NULL AND TRUE OR card_number = $3)
             AND ($4 IS NULL AND TRUE OR surname ILIKE '%' || $4 || '%')
             AND ($5 IS NULL AND TRUE OR name ILIKE '%' || $5 || '%')
             AND ($6 IS NULL AND TRUE OR user_groups.group_id = ANY($6))
-        ORDER BY surname, name, middlename;
+        ORDER BY surname, name, middlename
 $$ LANGUAGE SQL STABLE;
 
 
@@ -191,8 +194,9 @@ CREATE OR REPLACE FUNCTION
             WHERE id=in_id
             RETURNING id INTO res;
 
-            DELETE FROM user_groups WHERE user_id = res;
-            INSERT INTO user_groups SELECT res, group_id FROM (SELECT UNNEST(in_group_ids) AS group_id) as AA;
+        DELETE FROM user_groups WHERE user_id=res;
+        INSERT INTO user_groups (user_id, group_id)
+            SELECT res, UNNEST(in_group_ids);
 
         RETURN res;
     EXCEPTION

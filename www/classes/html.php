@@ -273,6 +273,12 @@ class HTML {
         HTML::include_css(ROOT.'css/smoothness_new/jquery-ui.css');
     }
 
+    public static function include_bootstrap() {
+        HTML::include_js(ROOT . 'bootstrap-3.3.2/js/bootstrap.min.js');
+        HTML::include_css(ROOT . 'bootstrap-3.3.2/css/bootstrap.min.css');
+        HTML::include_css(ROOT . 'bootstrap-3.3.2/css/bootstrap-theme.min.css');
+    }
+
     public static function fill_placeholder($name,$content) {
         if (!isset(HTML::$placeholders[$name])) 
             HTML::$placeholders[$name] = array($content);

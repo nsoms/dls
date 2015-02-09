@@ -11,6 +11,41 @@ function bind_filter() {
     $('input', '#iFilter').keyup(function(event) {
         $('#FilterButton').click();
     });
+    tak_ajax({
+        url: ROOT + 'mt/groups.php',
+        data: {
+            action: 'groups_list'
+        },
+        success: function(data) {
+
+            $('#FilterGroup').html(
+                tpl_groups_select({
+                    'groups': data.groups
+                })
+            );
+            $('#FilterGroup').multiselect({
+                buttonText: function (options, select) {
+                    if (options.length === 0) {
+                        return 'Необходимо выбрать группы';
+                    }
+                    else {
+                        var labels = [];
+                        options.each(function () {
+                            if ($(this).attr('label') !== undefined) {
+                                labels.push($(this).attr('label'));
+                            }
+                            else {
+                                labels.push($(this).html());
+                            }
+                        });
+                        return labels.join(', ') + ' ';
+                    }
+                }
+            }).change(function() {
+                $('#FilterButton').click();
+            });
+        }
+    });
     $('#FilterButton').click(function (event){
         event.preventDefault();
 
@@ -28,6 +63,7 @@ function bind_filter() {
                 }));
 
                 bind_user_link();
+                $(document).scroll(0);
             }
         });
     });
@@ -38,6 +74,7 @@ function bind_user_link() {
         event.preventDefault();
         var user_id = $(this).data('user-id');
         PersonModDlg.edit(user_id, function () {
+            $('#FilterButton').click();
         });
     })
 }

@@ -69,6 +69,8 @@ class DB {
     }
     
     public function to_pg_array($set) {
+        if ($set === null)
+            return null;
         settype($set, 'array'); // can be called with a scalar or array
         $result = array();
         foreach ($set as $t) {
@@ -231,11 +233,20 @@ class DB {
         return $this->one_val($res);
     }
 
+    public function user_mod($user_id, $id, $card, $surname, $name, $middle, $pic_name, $bday, $reg_form, $group_ids)
+    {
+        $res = pg_query_params(
+            $this->get_con(),
+            'SELECT * FROM user_mod($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
+            array($user_id, $id, $card, $surname, $name, $middle, $pic_name, $bday, $reg_form, DB::pass_array($group_ids))) or $this->error();
+        return $this->one_val($res);
+    }
+
     public function users_get ( $user_id, $id, $card, $surname, $name, $groups ){
         $res = pg_query_params(
             $this->get_con(),
             'SELECT * FROM users_get($1, $2, $3, $4, $5, $6)',
-            array($user_id, $id, $card, $surname, $name, $groups)) or $this->error();
+            array($user_id, $id, $card, $surname, $name, DB::pass_array($groups))) or $this->error();
         return $this->all_rows($res);
     }
 
