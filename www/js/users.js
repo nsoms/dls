@@ -1,6 +1,7 @@
 /**
  * Created by soms on 04.02.15.
  */
+var search_request = null;
 
 $(document).ready(function() {
     bind_user_link();
@@ -49,7 +50,10 @@ function bind_filter() {
     $('#FilterButton').click(function (event){
         event.preventDefault();
 
-        tak_ajax({
+        if(search_request != null)
+            search_request.cancel();
+
+        search_request = tak_ajax({
             url: ROOT + 'mt/users.php',
             data: {
                 action: 'users_list',
@@ -64,6 +68,7 @@ function bind_filter() {
 
                 bind_user_link();
                 $(document).scroll(0);
+                search_request = null;
             }
         });
     });
