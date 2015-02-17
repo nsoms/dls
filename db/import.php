@@ -20,7 +20,27 @@ function csv_to_array($filename='', $delimiter=',')
             $data[] = $row;
         fclose($handle);
     }
+
+    //print_r($data);
     return $data;
+}
+
+function get_pupil_data_1($p) {
+    if (isset($p[4]))
+        return array(
+            'surname'   => $p[0],
+            'name'      => $p[1],
+            'middle'    => $p[2],
+            'bday'      => $p[3],
+            'partic_year' => $p[4],
+            'form'      => $p[5]
+        );
+    return array(
+        'surname'   => $p[0],
+        'name'      => $p[1],
+        'middle'    => $p[2],
+        'bday'      => $p[3],
+    );
 }
 
 
@@ -77,12 +97,16 @@ foreach ($data as $person) {
         continue;
     }
 
-    list($surname, $name, $middle) = explode(' ', $person[1], 3);
+    $pp = get_pupil_data_1($person);
+
+/*    list($surname, $name, $middle) = explode(' ', $person[1], 3);
     $person_id = $db->user_add(ADMIN_USER_ID, '', $surname, $name, $middle,
-        null, str_to_dbdate($person[4]), $group_names[0], $group_ids);
+        null, str_to_dbdate($person[4]), $group_names[0], $group_ids);*/
+    $person_id = $db->user_add(ADMIN_USER_ID, '', $pp['surname'], $pp['name'], $pp['middle'],
+        null, str_to_dbdate($pp['bday']), $group_names[0], $group_ids);
     if ($person_id < 0) {
         echo "Ошибка " . $person_id . ": " . Errors::get($person_id);
         exit(0);
     }
-    echo $person[1] . " добавлен с идентификатором " . $person_id . "\n";
+    echo $pp['surname'] . " добавлен с идентификатором " . $person_id . "\n";
 }
