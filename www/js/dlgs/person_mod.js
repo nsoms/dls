@@ -76,6 +76,7 @@ var PersonModDlg = {
         }
 
         clear_dialog( PersonModDlg.element );
+        $('img', PersonModDlg.element).attr('src', '#');
         $(PersonModDlg.element).dialog( "option", "title", "Редактировать персону" );
         PersonModDlg.stop_canvas();
 
@@ -105,7 +106,7 @@ var PersonModDlg = {
                 $('input[name="surname"]',   PersonModDlg.element).val(user[2]);
                 $('input[name="name"]',      PersonModDlg.element).val(user[3]);
                 $('input[name="middle"]',    PersonModDlg.element).val(user[4]);
-                pic_name = user[5];
+                pic_name = user[5] + '?rand=' + Math.random();
                 $('input[name="dbdate"]',    PersonModDlg.element).val(user[5]);
                 var date = new Date(user[6]);
                 $('input[name="birthday"]',  PersonModDlg.element).datepicker("setDate", date);
