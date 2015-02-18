@@ -92,6 +92,7 @@ var PersonModDlg = {
                     show_error('Недостаточно прав');
                     return;
                 }
+
                 $('input[name="card"]',   PersonModDlg.element).focus();
 
 
@@ -103,6 +104,7 @@ var PersonModDlg = {
                     return;
                 }
 
+                $('input[name="card"]',      PersonModDlg.element).val(user[1]);
                 $('input[name="surname"]',   PersonModDlg.element).val(user[2]);
                 $('input[name="name"]',      PersonModDlg.element).val(user[3]);
                 $('input[name="middle"]',    PersonModDlg.element).val(user[4]);

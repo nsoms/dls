@@ -59,6 +59,7 @@ if (sizeof($argv) < 3) {
 $file_name = $argv[1];
 $group_names = array_slice($argv, 2);
 
+echo "\n\nImporting $file_name file\n";
 // parse csv to array
 $data = csv_to_array($file_name);
 
@@ -89,7 +90,7 @@ foreach ($group_names as $group_name) {
     $group_ids[] = $group_id;
 }
 
-$skip_rows = 2; // skip 2 first rows in csv file
+$skip_rows = 0; // skip 2 first rows in csv file
 // pass through users from file and put them into database
 foreach ($data as $person) {
     if ($skip_rows > 0){
