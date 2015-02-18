@@ -108,7 +108,7 @@ var PersonModDlg = {
                 $('input[name="surname"]',   PersonModDlg.element).val(user[2]);
                 $('input[name="name"]',      PersonModDlg.element).val(user[3]);
                 $('input[name="middle"]',    PersonModDlg.element).val(user[4]);
-                pic_name = user[5] + '?rand=' + Math.random();
+                pic_name = user[5];
                 $('input[name="dbdate"]',    PersonModDlg.element).val(user[5]);
                 var date = new Date(user[6]);
                 $('input[name="birthday"]',  PersonModDlg.element).datepicker("setDate", date);
@@ -121,7 +121,7 @@ var PersonModDlg = {
                     //PersonModDlg.stop_canvas();
                     $('#snapshot', PersonModDlg.element).hide();
                     $('#curphoto', PersonModDlg.element).show();
-                    $('#picname', PersonModDlg.element).attr('src', pic_name);
+                    $('#picname', PersonModDlg.element).attr('src', pic_name + '?rand=' + Math.random());
                 } else {
                     PersonModDlg.img_changed = true;
                     //PersonModDlg.play_canvas();
