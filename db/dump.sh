@@ -18,6 +18,6 @@ mv $dump_sql.tar.gz backup
 
 pushd backup
 MAILS=`cat maillist.txt`
-cat message.txt | mail -s "School DB backup" -a $dump.tar.gz -a $dump_sql.tar.gz MAILS
+cat message.txt | mail -s "School DB backup" -a $dump.tar.gz -a $dump_sql.tar.gz $MAILS
 popd
 popd
