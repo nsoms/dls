@@ -124,7 +124,6 @@ if( $action === 'users_list' ) {
         file_put_contents($picname, $img);
     }
 
-
     $res = $db->user_mod($user->id, $id, $card, $surname, $name, $middle, $picname, $birthday, $regclass, $groups);
 
     if ($res < 0)

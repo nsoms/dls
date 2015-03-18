@@ -72,7 +72,8 @@ function bind_filter() {
                 bind_user_link();
                 $(document).scroll(0);
                 search_request = null;
-                bind_user_add();
+                bind_pupil_add();
+                bind_teacher_add();
             }
         });
     });
@@ -88,9 +89,17 @@ function bind_user_link() {
     });
 }
 
-function bind_user_add() {
+function bind_pupil_add() {
     $('#AddPersonPupilBtn').click( function () {
         PersonModDlg.open($('#FilterGroup').val(), PUPIL_GROUP_ID, function () {
+            $('#FilterButton').click();
+        });
+    });
+}
+
+function bind_teacher_add() {
+    $('#AddPersonTeacherBtn').click( function () {
+        PersonModDlg.open(null, TEACHER_GROUP_ID, function () {
             $('#FilterButton').click();
         });
     });
