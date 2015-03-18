@@ -179,7 +179,6 @@ CREATE OR REPLACE FUNCTION
                 surname,
                 name,
                 middlename,
-                pic_name,
                 birthday,
                 reg_form
             ) = (
@@ -187,12 +186,15 @@ CREATE OR REPLACE FUNCTION
                 in_surname,
                 in_name,
                 in_middlename,
-                in_pic_name,
                 in_birthday,
                 in_reg_form
             )
             WHERE id=in_id
             RETURNING id INTO res;
+
+        IF in_pic_name IS NOT NULL THEN
+            UPDATE users SET pic_name = in_pic_name WHERE id=in_id;
+        END IF;
 
         DELETE FROM user_groups WHERE user_id=res;
         INSERT INTO user_groups (user_id, group_id)
