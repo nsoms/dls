@@ -8,10 +8,10 @@ CREATE OR REPLACE FUNCTION
 ) RETURNS SETOF groups AS $$
     SELECT * FROM groups
         WHERE
-            allowed_groups_see(viewer_id, id)
-            AND (in_id IS NULL AND TRUE OR id=$1)
-            AND (in_name IS NULL AND TRUE OR name ILIKE '%' || in_name || '%')
-        ORDER BY name;
+            allowed_groups_see($1, id)
+            AND ($2 IS NULL AND TRUE OR id=$2)
+            AND ($3 IS NULL AND TRUE OR name ILIKE '%' || $3 || '%')
+        ORDER BY name
 $$ LANGUAGE SQL STABLE;
 
 /* creates new groups with given params */

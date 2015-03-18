@@ -1,4 +1,4 @@
-{# params: users #}
+{# params: users, user_rights #}
 
 {#
  0    id              int,
@@ -16,6 +16,11 @@
 12    is_disabled     bool                                    -- включен/выключен
 
 #}
+
+{% if user_rights.mod == 't' %}
+<button class="btn btn-default" type="button" id="AddPersonPupilBtn">Добавить ученика</button>
+{% endif %}
+
 <table width=100% class="table table-striped">
     {% for user in users %}
         {% if loop.first %}
@@ -34,7 +39,11 @@
         {% endif %}
         {% set id = user[0] %}
         <tr style="vertical-align:top" class="PersonRow EntityRow">
-            <td><a href="#" class="link" data-user-id="{{ id }}">{{ user[2] }} {{ user[3] }} {{ user[4] }}</a></td>
+            <td>
+                {% if user_rights.mod == 't' %}<a href="#" class="link" data-user-id="{{ id }}">{% endif %}
+                    {{ user[2] }} {{ user[3] }} {{ user[4] }}
+                {% if user_rights.mod == 't' %}</a>{% endif %}
+            </td>
             <td>{{ user[1] }} &nbsp;</td>
             <td>{{ user[6] }}</td>
             <td>{{ user[7] }}</td>

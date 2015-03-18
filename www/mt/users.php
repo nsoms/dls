@@ -45,6 +45,49 @@ if( $action === 'users_list' ) {
         'groups' => $groups,
         'user_rights' => $user_rights
     ));
+} elseif ($action === 'user_add') {
+    $data = get_or_post('params');
+    $main_group_id = get_or_post_int('group_id');
+
+    list($card, $surname, $name, $middle, $birthday, $groups) = array(
+        Sanitize::clean($data['card']),
+        Sanitize::clean($data['surname']),
+        Sanitize::clean($data['name']),
+        Sanitize::clean($data['middle']),
+        Sanitize::clean($data['birthday']),
+        $data['groups']
+    );
+    $regday = date("Y-m-d");
+
+    $regclass = $db->groups_get($user->id, $main_group_id, null);
+    $regclass = $regclass[0][1];
+
+    $res = $db->user_add($user->id, $card, $surname, $name, $middle, '', $birthday, $regclass, $groups);
+
+    if ($res < 0)
+        JSON::error($res);
+
+    $id = $res;
+    $picname = '';
+    $canvas = $data['canvas'];
+    if (strlen($canvas) > 0) {
+        $canvas = str_replace('data:image/jpeg;base64,', '', $canvas);
+        $canvas = str_replace(' ', '+', $canvas);
+        $img = base64_decode($canvas);
+
+        $path = ROOT . '/photos/' . substr($regday, 0, 4) . '/' . $regclass;
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
+        $picname = $path . '/' . $surname . $id . '.jpg';
+        file_put_contents($picname, $img);
+    }
+
+    $res = $db->user_mod($user->id, $id, $card, $surname, $name, $middle, $picname, $birthday, $regclass, $groups);
+
+    JSON::reply(array(
+        'success' => 1
+    ));
 } elseif ($action === 'user_mod') {
     $id = get_or_post_int('id');
     $data = get_or_post('params');

@@ -24,20 +24,74 @@ var PersonModDlg = {
         PersonModDlg.bind_all();
         PersonModDlg.play_canvas();
     },
-    open: function ( org_id, callback, in_surname ) {
+    prepare_dlg: function () {
         if( $(PersonModDlg.element).length == 0 ) {
             console.error("Target not found");
             return;
         }
 
         clear_dialog( PersonModDlg.element );
+        $('img', PersonModDlg.element).attr('src', '#');
+        PersonModDlg.stop_canvas();
+    },
+    fill_groups: function (groups, selected) {
+        console.log(selected);
+        $('#groups_select', PersonModDlg.element).html(
+            tpl_groups_select({
+                'groups': groups,
+                'sel': selected
+            })
+        );
+        $('#groups_select', PersonModDlg.element).multiselect('destroy');
+        $('#groups_select', PersonModDlg.element).multiselect({
+            //checkboxName: 'groups[]',
+            buttonText: function(options, select) {
+                if (options.length === 0) {
+                    return 'Необходимо выбрать группы';
+                }
+                else {
+                    var labels = [];
+                    options.each(function() {
+                        if ($(this).attr('label') !== undefined) {
+                            labels.push($(this).attr('label'));
+                        }
+                        else {
+                            labels.push($(this).html());
+                        }
+                    });
+                    return labels.join(', ') + ' ';
+                }
+            }
+        });
+    },
+    open: function ( group_id, add_group_id, callback ) {
+        if( $(PersonModDlg.element).length == 0 ) {
+            console.error("Target not found");
+            return;
+        }
+
+        PersonModDlg.prepare_dlg();
+
         $(PersonModDlg.element).dialog( "option", "title", "Добавить персону" );
+
         PersonModDlg.img_changed = true;
         //PersonModDlg.play_canvas();
+        $('#snapshot', PersonModDlg.element).show();
+        $('#curphoto', PersonModDlg.element).hide();
 
-        if( in_surname )
-            $('input[name="surname"]', PersonModDlg.element).val(in_surname);
-        
+        var groups = [String(group_id), String(add_group_id)];
+
+        tak_ajax({
+            async: false,
+            url: ROOT + 'mt/groups.php',
+            data: {
+                action: 'groups_list'
+            },
+            success: function(data) {
+                PersonModDlg.fill_groups(data.groups, groups);
+            }
+        });
+
         $(PersonModDlg.element).dialog('option', {
             'buttons': [{   text: 'Сохранить',
                             click: function () {
@@ -45,11 +99,11 @@ var PersonModDlg = {
                                     return;
 
                                 tak_ajax({
-                                    url: ROOT + 'mt/persons.php',
+                                    url: ROOT + 'mt/users.php',
                                     data: {
-                                        action: 'person_add',
-                                        org: org_id,
-                                        params: PersonModDlg.get_data()
+                                        action: 'user_add',
+                                        params: PersonModDlg.get_data(),
+                                        group_id: group_id
                                     },
                                     success: function(data) {
                                         if( callback )
@@ -75,10 +129,8 @@ var PersonModDlg = {
             return;
         }
 
-        clear_dialog( PersonModDlg.element );
-        $('img', PersonModDlg.element).attr('src', '#');
+        PersonModDlg.prepare_dlg();
         $(PersonModDlg.element).dialog( "option", "title", "Редактировать персону" );
-        PersonModDlg.stop_canvas();
 
         tak_ajax({
             async: false,
@@ -129,33 +181,7 @@ var PersonModDlg = {
                     $('#curphoto', PersonModDlg.element).hide();
                 }
 
-                $('#groups_select', PersonModDlg.element).html(
-                    tpl_groups_select({
-                        'groups': data.groups,
-                        'sel': user[13]
-                    })
-                );
-                $('#groups_select', PersonModDlg.element).multiselect('destroy');
-                $('#groups_select', PersonModDlg.element).multiselect({
-                    //checkboxName: 'groups[]',
-                    buttonText: function(options, select) {
-                        if (options.length === 0) {
-                            return 'Необходимо выбрать группы';
-                        }
-                        else {
-                            var labels = [];
-                            options.each(function() {
-                                if ($(this).attr('label') !== undefined) {
-                                    labels.push($(this).attr('label'));
-                                }
-                                else {
-                                    labels.push($(this).html());
-                                }
-                            });
-                            return labels.join(', ') + ' ';
-                        }
-                    }
-                });
+                PersonModDlg.fill_groups(data.groups, user[13]);
             }
         });
 

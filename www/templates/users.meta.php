@@ -13,3 +13,10 @@ HTML::twig_js_template_file('users_list');
 HTML::twig_js_template_file('groups_select');
 
 HTML::include_dlg('person_mod', array());
+
+
+
+HTML::js('
+    var TEACHER_GROUP_ID=' . $db->group_id_by_name(DLSConfig::$teachers_group_name) . ';
+    var PUPIL_GROUP_ID=' . $db->group_id_by_name(DLSConfig::$pupils_group_name) . ';
+');

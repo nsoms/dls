@@ -6,6 +6,7 @@ var search_request = null;
 $(document).ready(function() {
     bind_user_link();
     bind_filter();
+    $('#FilterButton').click();
 });
 
 function bind_filter() {
@@ -13,6 +14,7 @@ function bind_filter() {
         $('#FilterButton').click();
     });
     tak_ajax({
+        async: false,
         url: ROOT + 'mt/groups.php',
         data: {
             action: 'groups_list'
@@ -63,12 +65,14 @@ function bind_filter() {
             },
             success: function(data) {
                 $('#UsersList').html(tpl_users_list({
-                    'users': data.users
+                    'users': data.users,
+                    'user_rights': data.user_rights
                 }));
 
                 bind_user_link();
                 $(document).scroll(0);
                 search_request = null;
+                bind_user_add();
             }
         });
     });
@@ -81,5 +85,13 @@ function bind_user_link() {
         PersonModDlg.edit(user_id, function () {
             $('#FilterButton').click();
         });
-    })
+    });
+}
+
+function bind_user_add() {
+    $('#AddPersonPupilBtn').click( function () {
+        PersonModDlg.open($('#FilterGroup').val(), PUPIL_GROUP_ID, function () {
+            $('#FilterButton').click();
+        });
+    });
 }
