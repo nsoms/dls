@@ -31,6 +31,7 @@ var PersonModDlg = {
         }
 
         clear_dialog( PersonModDlg.element );
+        $('img', PersonModDlg.element).attr('src', '#');
         PersonModDlg.stop_canvas();
     },
     fill_groups: function (groups, selected) {
@@ -143,6 +144,7 @@ var PersonModDlg = {
                     show_error('Недостаточно прав');
                     return;
                 }
+
                 $('input[name="card"]',   PersonModDlg.element).focus();
 
 
@@ -154,6 +156,7 @@ var PersonModDlg = {
                     return;
                 }
 
+                $('input[name="card"]',      PersonModDlg.element).val(user[1]);
                 $('input[name="surname"]',   PersonModDlg.element).val(user[2]);
                 $('input[name="name"]',      PersonModDlg.element).val(user[3]);
                 $('input[name="middle"]',    PersonModDlg.element).val(user[4]);
@@ -170,7 +173,7 @@ var PersonModDlg = {
                     //PersonModDlg.stop_canvas();
                     $('#snapshot', PersonModDlg.element).hide();
                     $('#curphoto', PersonModDlg.element).show();
-                    $('#picname', PersonModDlg.element).attr('src', pic_name);
+                    $('#picname', PersonModDlg.element).attr('src', pic_name + '?rand=' + Math.random());
                 } else {
                     PersonModDlg.img_changed = true;
                     //PersonModDlg.play_canvas();

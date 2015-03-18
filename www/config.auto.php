@@ -6,18 +6,26 @@
     public static $files_versions;
   };
   Config::$files_versions = array(
-    'js/jquery-1.9.1.js' => '1403178304',
-    'js/jquery-1.9.1.min.js' => '1403178304',
-    'js/jquery-migrate-1.1.0.min.js' => '1403178304',
-    'js/jquery-ui-1.10.1.custom.js' => '1403178304',
-    'js/jquery-ui-1.10.1.custom.min.js' => '1403178304',
-    'js/jquery.ba-bbq.js' => '1403178304',
-    'js/jquery.form.js' => '1403178304',
-    'js/jquery.ui.datepicker-ru.js' => '1403178304',
-    'js/jquery.uploadfile.js' => '1403178304',
-    'js/jquery.uploadfile.min.js' => '1403178304',
-    'css/all.css' => '1404411520',
-    'css/uploadfile.css' => '1403178304',
+    'js/bootstrap-multiselect.js' => '1423762073',
+    'js/common.js' => '1423762073',
+    'js/jquery-1.9.1.js' => '1423762073',
+    'js/jquery-1.9.1.min.js' => '1423762073',
+    'js/jquery-migrate-1.1.0.min.js' => '1423762073',
+    'js/jquery-ui-1.10.1.custom.js' => '1423762073',
+    'js/jquery-ui-1.10.1.custom.min.js' => '1423762073',
+    'js/jquery.ba-bbq.js' => '1423762073',
+    'js/jquery.form.js' => '1423762073',
+    'js/jquery.ui.datepicker-ru.js' => '1423762073',
+    'js/jquery.uploadfile.js' => '1423762073',
+    'js/jquery.uploadfile.min.js' => '1423762073',
+    'js/twig.js' => '1423762073',
+    'js/users.js' => '1424159473',
+    'js/dlgs/person_mod.js' => '1424247439',
+    'css/all.css' => '1423762073',
+    'css/bootstrap-multiselect.css' => '1423762073',
+    'css/uploadfile.css' => '1423762073',
+    'templates/twig_js/groups_select.js' => '1424159013',
+    'templates/twig_js/users_list.js' => '1424159013',
   );
 
 ?>

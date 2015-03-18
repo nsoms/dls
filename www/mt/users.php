@@ -98,7 +98,7 @@ if( $action === 'users_list' ) {
         Sanitize::clean($data['surname']),
         Sanitize::clean($data['name']),
         Sanitize::clean($data['middle']),
-        Sanitize::clean($data['birthday']),
+        str_to_dbdate(Sanitize::clean($data['birthday'])),
         Sanitize::clean($data['regclass']),
         Sanitize::clean($data['regday']),
         $data['groups']
@@ -119,6 +119,8 @@ if( $action === 'users_list' ) {
             mkdir($path, 0777, true);
         }
         $picname = $path . '/' . $surname . $id . '.jpg';
+        if (file_exists($picname))
+            unlink($picname);
         file_put_contents($picname, $img);
     }
 
