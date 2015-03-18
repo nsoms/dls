@@ -219,6 +219,30 @@ class DB {
         return $this->one_val($res);
     }
 
+    public function group_id_by_name ($group_name) {
+        global $user;
+        $groups = $this->groups_get($user->id, null, $group_name);
+
+        $group = null;
+        // due to that groups_get returns all groups by substring we should check all returned groups for its name
+        foreach ($groups as $gr)
+            if ($gr[1] == $group_name)
+                $group = $gr;
+
+        $group_id = null;
+        // if group still not found - add it
+        if ($group === null) {
+            $group_id = $this->group_add(ADMIN_USER_ID, $group_name);
+            if ($group_id < 0) {
+                echo "Ошибка " . $group_id . ": " . Errors::get($group_id);
+                exit(0);
+            }
+        } else
+            $group_id = $group[0];
+
+        return $group_id;
+    }
+
 
     /************************************************
      * USERS FUNCTIONS

@@ -19,11 +19,6 @@ list($users) = $args;
 
     </div>
     <div id="UsersList">
-    <?php
-        HTML::twig_template_render('users_list', array(
-            'users' => $users
-        ));
-    ?>
     </div>
 </div>
 
