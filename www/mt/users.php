@@ -54,7 +54,7 @@ if( $action === 'users_list' ) {
         Sanitize::clean($data['surname']),
         Sanitize::clean($data['name']),
         Sanitize::clean($data['middle']),
-        Sanitize::clean($data['birthday']),
+        str_to_dbdate(Sanitize::clean($data['birthday'])),
         $data['groups']
     );
     $regday = date("Y-m-d");
