@@ -1,4 +1,5 @@
 /* returns list of groups for given params */
+DROP FUNCTION IF EXISTS check_pwd(text,text);
 CREATE OR REPLACE FUNCTION
     check_pwd (
         in_login      text,
@@ -14,7 +15,8 @@ CREATE OR REPLACE FUNCTION
     users_see       bool,
     users_all_see   bool,
     users_mod       bool,
-    users_role_set  bool
+    users_role_set  bool,
+    log_see         bool
 ) AS $$
     SELECT
         users.id,
@@ -27,14 +29,14 @@ CREATE OR REPLACE FUNCTION
         users_see,
         users_all_see,
         users_mod,
-        users_role_set
+        users_role_set,
+        log_see
     FROM users
         JOIN roles ON roles.id=users.role_id
         WHERE
             NOT is_disabled
             AND login = $1 AND passwd = $2
 $$ LANGUAGE SQL STABLE;
-
 
 /* returns list of groups for given params */
 DROP FUNCTION IF EXISTS users_get ( int, int, text, text, text, int[] );
@@ -239,6 +241,37 @@ CREATE OR REPLACE FUNCTION
                 in_passwd,
                 in_role_id
             )
+            WHERE id=in_id
+            RETURNING id INTO res;
+
+        RETURN res;
+    EXCEPTION
+        WHEN unique_violation THEN
+            RETURN -1;     -- unique violation
+        WHEN OTHERS THEN
+            RETURN -1000;  -- unknown error
+    END;
+$$ LANGUAGE plpgsql VOLATILE;
+
+
+/* disables or enables user */
+CREATE OR REPLACE FUNCTION
+    user_endisable (
+    viewer_id   int,
+    in_id       int
+) RETURNS int AS $$
+    DECLARE
+        allowed bool;
+        res int;
+    BEGIN
+        allowed := allowed_users_role_set(viewer_id, NULL);
+
+        IF NOT allowed THEN
+            RETURN -3;   -- not enough rights to modify users
+        END IF;
+
+        UPDATE users
+            SET is_disabled = NOT is_disabled
             WHERE id=in_id
             RETURNING id INTO res;
 

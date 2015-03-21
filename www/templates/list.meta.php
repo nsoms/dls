@@ -6,6 +6,5 @@ HTML::include_bootstrap();
 HTML::include_js('js/bootstrap-multiselect.js');
 HTML::include_css('css/bootstrap-multiselect.css');
 
+HTML::twig_js_template_file('log_list');
 HTML::include_js('js/list.js');
-HTML::twig_js_template_file('users_list');
-HTML::twig_js_template_file('groups_select');

@@ -16,6 +16,8 @@ class Server(threading.Thread):
     buf = ''
     port = ''
     config = None
+    last_card = ''
+    last_action = None
 
     def send_gpio(self):
         """
@@ -70,7 +72,6 @@ class Server(threading.Thread):
                 continue
             if s[0] == 'F':  # Card number signal
                 card = s[3:]
-                #if Config.debug:
                 print self.name, "Card input: " + card
                 self.proceed_card(card)
 
@@ -80,6 +81,16 @@ class Server(threading.Thread):
         :param card: Card number
         :return: None
         """
+
+        cur_time = time.time()
+        if last_card is not None and last_time is not None and cur_time - last_time < Config.check_delay and last_card == card:
+            if Config.debug:
+                print "Skip repeated card '", card, "' action (less then ", Config.check_delay, " seconds)"
+            return
+
+        last_time = cur_time
+        last_card = card
+
         action = self.config.get('action', None)
         if action is None:
             return

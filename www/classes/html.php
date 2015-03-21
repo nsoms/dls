@@ -173,8 +173,8 @@ class HTML {
         HTML::$title = PAGE_CAPT_PREFIX . ' - ' . $page_title; 
     }
 
-    public static function header($jquery=false) {
-        HTML::template('header');
+    public static function header($left_menu=true, $check_login=true) {
+        HTML::template('header', array($left_menu, $check_login));
     }
 
     public static function include_dlg( $template, $args ) {

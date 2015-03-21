@@ -12,8 +12,11 @@ Util::set_json_mode(true);
 $action = get_or_post('action');
 if( $action === 'check' ) {
     $card_num = get_or_post('card');
+    $reader = get_or_post('reader');
+
+    $res = $db->check_card($card_num, $reader);
 
     JSON::reply(array(
-        'access' => true
+        'access' => $res
     ));
 }

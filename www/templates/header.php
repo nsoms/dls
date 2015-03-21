@@ -1,9 +1,13 @@
 <?php
+    list($left_menu, $check_login) = $args;
+
     global $user;
-    if($user->is_anonymous() && HTML::page_name() != "login.php") {
+    if($check_login && $user->is_anonymous() && HTML::page_name() != "login.php") {
         header("Location: login.php");
         exit(0);   
     }
+    if(!$check_login && $user->is_anonymous())
+        $user = User::create_anonymous();
 
     $menu = array(
         array(
@@ -15,6 +19,11 @@
             'pagename' => 'groups.php',
             'caption' => 'Группы',
             'show' => $user->groups_see
+        ),
+        array(
+            'pagename' => 'list.php',
+            'caption' => 'Активность',
+            'show' => $user->log_see
         )
     );
 ?>
@@ -75,22 +84,28 @@
             </div>
         </div>
         <div id="SuperContent">
-            <div id="LeftMenu">
-                <div id="Menu">
-                    <ul>
-    <?php
-                    foreach ($menu as $m) {
-                        if ( isset($user) && !$user->is_anonymous() && $m['show'] === 't' )
-                            echo "<li",
-                                ( HTML::page_name() == $m['pagename'] || HTML::page_path() . '/' . HTML::page_name() == $m['pagename'] ? ' class="selected"' : '' ),
-                                "><a href='", ROOT, $m['pagename'], "'>", $m['caption'], "</a></li>\n";
-                  }
-    ?>                
-                    </ul>
+            <?php
+            if($left_menu) {
+                ?>
+                <div id="LeftMenu">
+                    <div id="Menu">
+                        <ul>
+                            <?php
+                            foreach ($menu as $m) {
+                                if (isset($user) && !$user->is_anonymous() && $m['show'] === 't')
+                                    echo "<li",
+                                    (HTML::page_name() == $m['pagename'] || HTML::page_path() . '/' . HTML::page_name() == $m['pagename'] ? ' class="selected"' : ''),
+                                    "><a href='", ROOT, $m['pagename'], "'>", $m['caption'], "</a></li>\n";
+                            }
+                            ?>
+                        </ul>
+                    </div>
+                    <?php HTML::placeholder('calendar'); ?>
                 </div>
-                <?php HTML::placeholder('calendar'); ?>
-            </div>
-            <div id="Content">
+                <div id="Content">
+            <?php
+            } else echo "<div>";
+            ?>
                 <div class="Title"><?php echo HTML::$page_title; ?></div>
                 <div id="Error" style="display:none"><?php HTML::placeholder('errors'); ?></div>
                 <div id="Status"><?php HTML::placeholder('errors'); ?></div>

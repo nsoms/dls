@@ -11,9 +11,9 @@ Util::set_json_mode(true);
 
 $action = get_or_post('action');
 if( $action === 'log' ) {
-
+    $data = $db->log_list(DLSConfig::$log_list_limit);
 
     JSON::reply(array(
-        'access' => true
+        'data' => $data
     ));
 }

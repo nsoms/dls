@@ -6,6 +6,7 @@ class Config:
     debug = True
     boudrate = 9600
     sleep_delay = 1
+    check_delay = 3
     devs = [
         {
             'name': 'Entrance',         # Name of reader

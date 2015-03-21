@@ -15,19 +15,24 @@ CREATE OR REPLACE FUNCTION
         in_reader       text    -- reader
 ) RETURNS BOOL AS $$
     BEGIN
-        SELECT log_action(in_card, in_reader);
+        PERFORM log_action(in_card, in_reader);
 
         RETURN TRUE; -- superhack
     END
 $$ LANGUAGE plpgsql VOLATILE;
 
+DROP FUNCTION IF EXISTS log_list();
+DROP FUNCTION IF EXISTS log_list(int, int);
 CREATE OR REPLACE FUNCTION
     log_list(
+        lim     int,
+        offs    int
 ) RETURNS TABLE (
     id              int,
     reader          text,                                   -- считыватель
     action_time     timestamp with time zone,               -- время события
     card_number     text,                                   -- номер карты
+    user_id         int,                                    -- id пользователя
     surname         text,                                   -- фамилия
     name            text,                                   -- имя
     middlename      text,                                   -- отчество
@@ -39,11 +44,15 @@ CREATE OR REPLACE FUNCTION
         log.reader,
         log.time,
         log.card,
+        users.id,
         users.surname,
         users.name,
         users.middlename,
         users.pic_name,
-        ARRAY(SELECT groups.name FROM groups JOIN user_groups ON groups.id=user_groups.group_id WHERE user_id = users.id)
+        ARRAY(SELECT groups.name FROM groups JOIN user_groups ON groups.id=user_groups.group_id WHERE user_id = users.id ORDER BY groups.name)
     FROM log
-    JOIN users ON log.card=users.card_number
+    LEFT OUTER JOIN  users ON log.card=users.card_number
+    ORDER BY log.time DESC
+    LIMIT   $1
+    OFFSET  $2
 $$ LANGUAGE SQL STABLE

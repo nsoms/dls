@@ -16,12 +16,14 @@ class User {
     public $users_all_see;
     public $users_mod;
     public $users_role_set;
+    public $log_see;
 
 
     public function __construct($id,$name,$role,$rolename, $login,
                                 $groups_see, $groups_mod,
                                 $users_see, $users_all_see,
-                                $users_mod, $users_role_set) {
+                                $users_mod, $users_role_set,
+                                $log_see) {
         $this->id = $id;
         $this->name = $name;
         $this->login = $login;
@@ -33,10 +35,11 @@ class User {
         $this->users_all_see    = $users_all_see;
         $this->users_mod        = $users_mod;
         $this->users_role_set   = $users_role_set;
+        $this->log_see          = $log_see;
     }
     
     public static function from_row($row) {
-        $u = new User(0,null,null,null,null,'f','f','f','f','f','f');
+        $u = new User(0,null,null,null,null,'f','f','f','f','f','f','t');
         list(
             $u->id,
             $u->name,
@@ -48,7 +51,8 @@ class User {
             $u->users_see,
             $u->users_all_see,
             $u->users_mod,
-            $u->users_role_set
+            $u->users_role_set,
+            $u->log_see
         ) = $row;
         return $u;
     }
@@ -66,6 +70,7 @@ class User {
         if (!isset($_SESSION['user_users_all_see'])) return User::create_anonymous();
         if (!isset($_SESSION['user_users_mod'])) return User::create_anonymous();
         if (!isset($_SESSION['user_users_role_set'])) return User::create_anonymous();
+        if (!isset($_SESSION['user_log_see'])) return User::create_anonymous();
 
         return new User($_SESSION['user_id'], $_SESSION['user_name'],
                         $_SESSION['user_role'], $_SESSION['user_role_name'],
@@ -75,12 +80,13 @@ class User {
                         $_SESSION['user_users_see'],
                         $_SESSION['user_users_all_see'],
                         $_SESSION['user_users_mod'],
-                        $_SESSION['user_users_role_set']
+                        $_SESSION['user_users_role_set'],
+                        $_SESSION['user_log_see']
                         );
     }
 
     public static function create_anonymous() {
-        return new User(0,'',0,null,null,'f','f','f','f','f','f');
+        return new User(0,'',0,null,null,'f','f','f','f','f','f','t');
     }
     
     public function is_anonymous() {
@@ -104,6 +110,7 @@ class User {
         $_SESSION['user_users_all_see']  = $this->users_all_see;
         $_SESSION['user_users_mod']      = $this->users_mod;
         $_SESSION['user_users_role_set'] = $this->users_role_set;
+        $_SESSION['user_log_see']        = $this->log_see;
     }
     
     public function require_login() {

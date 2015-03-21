@@ -274,6 +274,28 @@ class DB {
         return $this->all_rows($res);
     }
 
+    public function check_card($card, $reader)
+    {
+        $res = pg_query_params(
+            $this->get_con(),
+            'SELECT * FROM check_card($1, $2)',
+            array($card, $reader)) or $this->error();
+        return $this->one_val($res);
+    }
+
+    public function log_list($lim, $offs = 0){
+        $res = pg_query_params(
+            $this->get_con(),
+            'SELECT * FROM log_list($1, $2)',
+            array($lim, $offs)) or $this->error();
+        $ret = $this->all_rows($res);
+        foreach($ret as &$r)
+            $r[9] = $this->parse_array($r[9]);
+        return $ret;
+    }
+
+
+
     /************************************************
      * ROLES FUNCTIONS
      */
