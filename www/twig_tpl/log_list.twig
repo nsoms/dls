@@ -1,0 +1,73 @@
+{# params: data #}
+
+{#
+ 0    id              int,
+ 1    reader          text,                                   -- считыватель
+ 2    action_time     timestamp with time zone,               -- время события
+ 3    card_number     text,                                   -- номер карты
+ 4    user_id         int,                                    -- id пользователя
+ 5    surname         text,                                   -- фамилия
+ 6    name            text,                                   -- имя
+ 7    middlename      text,                                   -- отчество
+ 8    pic_name        text,                                   -- имя файла фотографии
+ 9    groups          text[]                                  -- группы пользователя
+#}
+{% for user in data %}
+
+    <div class="col-md-6" style="margin-bottom:15px">
+        <div class="center-block">
+            {% if user[4] is empty %}
+                <img src="{{ ROOT }}img/nophoto.png" style='max-width: 320px' />
+            {% else %}
+                <img src="{{ user[8] }}" style='max-width: 320px' />
+            {% endif %}
+        </div>
+        <div class="">
+            {% if user[4] is empty %}
+                <h3>Неизвестная карта</h3>
+                <h4>&nbsp;</h4>
+            {% else %}
+                <h3>{{ user[5] }} {{ user[6] }} {{ user[7] }}</h3>
+                <h4>{% for g in user[9] %}{{ g }} {% endfor %}</h4>
+            {% endif %}
+            <h5>{{ user[1] }} <small>{{ user[2] }}</small></h5>
+            <h6><small>{{ user[3] }}</small></h6>
+        </div>
+    </div>
+{% else %}
+<h3><small>Нет действий</small></h3>
+{% endfor %}
+
+{# <table width=100% class="table table-striped">
+    {% for user in data %}
+        {% if loop.first %}
+    <thead>
+    <tr style="font-weight: bold;">
+        <th></th>
+        <th>ФИО</th>
+        <th>Считыватель</th>
+        <th>Дата</th>
+        <th>Номер карты</th>
+        <th>Группы</th>
+    </tr>
+    </thead>
+    <tbody>
+        {% endif %}
+        {% set id = user[0] %}
+        <tr style="vertical-align:top" class="PersonRow EntityRow">
+            <td>
+                <img src="{{ user[8] }}" />
+            </td>
+            <td>{{ user[5] }} {{ user[6] }} {{ user[7] }}</td>
+            <td>{{ user[1] }}</td>
+            <td>{{ user[2] }}</td>
+            <td>{{ user[3] }}</td>
+            <td>{% for g in user[9] %}{{ g }} {% endfor %}</td>
+        </tr>
+    {% else %}
+        <tbody>
+        <tr><td>Нет действий</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+#}
