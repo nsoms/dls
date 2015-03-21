@@ -19,13 +19,13 @@
     'js/jquery.uploadfile.js' => '1423762073',
     'js/jquery.uploadfile.min.js' => '1423762073',
     'js/twig.js' => '1423762073',
-    'js/users.js' => '1424159473',
-    'js/dlgs/person_mod.js' => '1424247439',
+    'js/users.js' => '1426665816',
+    'js/dlgs/person_mod.js' => '1426665684',
     'css/all.css' => '1423762073',
     'css/bootstrap-multiselect.css' => '1423762073',
     'css/uploadfile.css' => '1423762073',
-    'templates/twig_js/groups_select.js' => '1424159013',
-    'templates/twig_js/users_list.js' => '1424159013',
+    'templates/twig_js/groups_select.js' => '1426665857',
+    'templates/twig_js/users_list.js' => '1426665857',
   );
 
 ?>
