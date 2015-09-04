@@ -14,7 +14,7 @@
 # Description: Phys-Math Liceum #30 Door Locking System init.d script
 ### END INIT INFO
 
-PROC="`ps aux | grep '/usr/local/bin/dls_server' | grep -v 'grep ' | awk '{print $2}'`"
+PROC="`ps aux | grep '/usr/local/bin/dls_serve' | grep -v 'grep ' | awk '{print $2}'`"
 
 
 # Carry out specific functions when asked to by the system
@@ -23,7 +23,7 @@ case "$1" in
         echo "Starting dls_server"
         # run application you want to start
         if [ "$PROC" == '' ]; then
-            /usr/local/bin/dls_server > /var/log/dls_serve.log 2>/var/log/dls_serve.err &
+            /usr/local/bin/dls_server > /var/log/dls_serve.log 2>&1 &
             echo "started"
         else
             echo "already started"
@@ -32,8 +32,8 @@ case "$1" in
     stop)
     
         echo "Stopping dls_server"
-        # kill application you want to stop
-        # killall noip2
+        # kill application 
+        echo $PROC
         if [ "$PROC" == '' ]; then
             echo "Not started"
         else

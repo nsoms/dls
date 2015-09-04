@@ -30,7 +30,7 @@ class Server(threading.Thread):
             time.sleep(Config.sleep_delay)
             GPIO.output(int(gpio_port), 0)
         
-            print "Send signal to GPIO"
+            print time.ctime(), "Send signal to GPIO"
 
     def check(self):
         """
@@ -39,7 +39,7 @@ class Server(threading.Thread):
         """
 
         if not self.ser.isOpen():
-            print "Serial port is not opened or locked! Exit."
+            print time.ctime(), "Serial port is not opened or locked! Exit."
             sys.exit(1)
 
     def proceed_signal(self, in_str=None):
@@ -56,7 +56,7 @@ class Server(threading.Thread):
 
         # check that signal begins with '#'
         if self.buf[0] != '#':
-            print self.name, "Wrong signal. Continue"
+            print time.ctime(), self.name, "Wrong signal. Continue"
             return
 
         # get signals from string - it could be concatenated signals
@@ -68,11 +68,11 @@ class Server(threading.Thread):
                 continue
             if s[0] == 'S':  # Autotest signal
                 if Config.debug:
-                    print self.name, 'Autotest'
+                    print time.ctime(), self.name, 'Autotest'
                 continue
             if s[0] == 'F':  # Card number signal
                 card = s[3:]
-                print self.name, "Card input: " + card
+                print time.ctime(), self.name, "Card input: " + card
                 self.proceed_card(card)
 
     def proceed_card(self, card):
@@ -81,15 +81,16 @@ class Server(threading.Thread):
         :param card: Card number
         :return: None
         """
-
         cur_time = time.time()
-        if last_card is not None and last_time is not None and cur_time - last_time < Config.check_delay and last_card == card:
+        if not self.last_card:
+            self.last_card = ''
+        if self.last_card is not None and self.last_time is not None and cur_time - self.last_time < Config.check_delay and self.last_card == card:
             if Config.debug:
-                print "Skip repeated card '", card, "' action (less then ", Config.check_delay, " seconds)"
+                print time.ctime(), "Skip repeated card '", card, "' action (less then ", Config.check_delay, " seconds)"
             return
 
-        last_time = cur_time
-        last_card = card
+        self.last_time = cur_time
+        self.last_card = card
 
         action = self.config.get('action', None)
         if action is None:
@@ -97,23 +98,24 @@ class Server(threading.Thread):
         func = ACTIONS.get(action, None)
         if func is None:
             return
-        print self.name, "Executing callback '" + action + "' with card " + card
+        print time.ctime(), self.name, "Executing callback '" + action + "' with card " + card
 
         # execute callback function
         try:
             if func(self.name, card):
-                print "Executed with ret val True"
+                print time.ctime(), "Executed with ret val True"
                 # check we should send signal to GPIO interface
                 send_gpio = self.config.get('open', False)
                 if send_gpio:
                     self.send_gpio()
             else:
-                print "Executed with ret val False"
+                print time.ctime(), "Executed with ret val False"
         except Exception as e:
-            print self.name, "Error executing callback: ", str(e), " Exception pass"
+            print time.ctime(), self.name, "Error executing callback: ", str(e), " Exception pass"
             pass
 
     def process(self):
+        
         while 1:
             self.buf = ''
             # let's wait one second before reading output (let's give device time to answer)
@@ -123,11 +125,14 @@ class Server(threading.Thread):
 
             if self.buf != '':
                 self.proceed_signal()
+            sys.stdout.flush()
 
 
     def __init__(self, config):
         # initialize parent class
         super(Server, self).__init__()
+        self.last_card = None
+        self.last_time = None
         #set thread daemonic
         self.daemon = True
 
@@ -137,10 +142,10 @@ class Server(threading.Thread):
         # configure the serial connections (the parameters differs on the device you are connecting to)
         self.port = config.get('port', None)
         if self.port is None:
-            print self.name, "port is None. Exit"
+            print time.ctime(), self.name, "port is None. Exit"
             sys.exit(1)
 
-        print self.name, "Starting serving "
+        print time.ctime(), self.name, "Starting serving "
         self.ser = serial.Serial(
             port=self.port,
             baudrate=Config.boudrate,
@@ -152,13 +157,13 @@ class Server(threading.Thread):
         self.check()
 
     def __exit__(self, type, value, traceback):
-        print self.name, "Closing port " + self.port + "... ",
+        print time.ctime(), self.name, "Closing port " + self.port + "... ",
         if self.ser.isOpen():
             self.ser.close()
             print "closed"
         else:
             print "not opened"
-        print type, value, traceback
+        print time.ctime(), type, value, traceback
 
     def run(self):
         self.process()
