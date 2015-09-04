@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# dls_server	Phys-Math Liceum #30 Door Locking System init.d script 
+#
+# chkconfig: 2345 10 98
+# description: Phys-Math Liceum #30 Door Locking System init.d script
+### BEGIN INIT INFO
+# Provides: dls_server
+# Required-Start:
+# Required-Stop:
+# Default-Start:  2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Phys-Math Liceum #30 Door Locking System init.d script
+# Description: Phys-Math Liceum #30 Door Locking System init.d script
+### END INIT INFO
+
+PROC="`ps aux | grep '/usr/local/bin/dls_server' | grep -v 'grep ' | awk '{print $2}'`"
+
+
+# Carry out specific functions when asked to by the system
+case "$1" in
+    start)
+        echo "Starting dls_server"
+        # run application you want to start
+        if [ "$PROC" == '' ]; then
+            /usr/local/bin/dls_server > /var/log/dls_serve.log 2>/var/log/dls_serve.err &
+            echo "started"
+        else
+            echo "already started"
+        fi
+        ;;
+    stop)
+    
+        echo "Stopping dls_server"
+        # kill application you want to stop
+        # killall noip2
+        if [ "$PROC" == '' ]; then
+            echo "Not started"
+        else
+            kill $PROC
+            echo "stopped"
+        fi
+        ;;
+    *)
+	echo "Usage: /etc/init.d/dls_server {start|stop}"
+	exit 1
+        ;;
+esac
+
+exit 0
+
