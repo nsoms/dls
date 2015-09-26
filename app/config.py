@@ -5,7 +5,7 @@ class Config:
     check_uri = 'http://%s/mt/check.php?action=%s&reader=%s&card=%s' 
     debug = True
     boudrate = 9600
-    sleep_delay = 1
+    sleep_delay = 5
     check_delay = 3
     devs = [
         {
