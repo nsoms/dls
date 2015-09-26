@@ -1,0 +1,5 @@
+Relay pins:
+Relay    	Rasp Pi B+
+VCC 	-> 	2
+GND	->	6
+INx	->	7
