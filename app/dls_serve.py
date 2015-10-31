@@ -9,7 +9,7 @@ from config import Config
 from actions import *
 import RPi.GPIO as GPIO
 
-
+from net_check import NetCheck
 
 class Server(threading.Thread):
     ser = None
@@ -101,18 +101,13 @@ class Server(threading.Thread):
         print time.ctime(), self.name, "Executing callback '" + action + "' with card " + card
 
         # in failure state - just check should we open or not. In we should - then open for any card
-        if self.config.get('failure', False):
-            print time.ctime(), self.name, "In failure state. Attempt # " + \
-                                           self.config.get('attempts', 1) + " / " + \
-                                           self.config.get('failure_try', Config.default_failure_tries)
-            if self.config.get('attempts', 1) == self.config.get('failure_try', Config.default_failure_tries):
-                print time.ctime(), self.name, "Return to normal state"
-            else:
-                if self.config.get('open', False):
-                    print time.ctime(), self.name, "In failure state. Open door due to configuration "
-                    self.send_gpio()
-                self.config['attempts'] = self.config.get('attempts', 1) + 1
-                return
+        #if self.config.get('failure', False):
+        if NetCheck.status == False:
+            print time.ctime(), self.name, "Network failure. Check config to open door."
+            if self.config.get('open', False):
+                print time.ctime(), self.name, "Network failure. Open door due to configuration"
+                self.send_gpio()
+            return
 
         # execute callback function
         try:
@@ -126,13 +121,7 @@ class Server(threading.Thread):
         except Exception as e:
             # if exception raised - then something goes wrong with network connection on smthn else.
             # Set to failure state and start execute action in automatic
-            print time.ctime(), self.name, "Error executing callback: ", str(e), ". "
-            print time.ctime(), self.name, "Due to error set state to Failured. Retry in " + \
-                                           self.config.get('failure_try', Config.default_failure_tries) + \
-                                           " attempts. If configured to open - then open"
-
-            self.config['failure'] = True
-            self.config['attempts'] = 1
+            print time.ctime(), self.name, "Error executing callback: ", str(e), ". Check config to open door."
             if self.config.get('open', False):
                 self.send_gpio()
             pass
@@ -160,7 +149,6 @@ class Server(threading.Thread):
 
         # store given config
         self.config = config
-        self.config['failure'] = False
 
         # configure the serial connections (the parameters differs on the device you are connecting to)
         self.port = config.get('port', None)
@@ -205,6 +193,10 @@ def main():
         srv.name = c.get('name', 'NONAME_' + str(i))
         srv.start()
         i += 1
+
+    srv = NetCheck()
+    srv.name = 'NetworkChecker'
+    srv.start()
 
     # Ctrl+C waiting
     while threading.active_count() > 0:

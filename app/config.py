@@ -2,11 +2,13 @@ __author__ = 'soms'
 
 class Config:
     server_uri = '192.168.30.221'
+    server_port = 80
     check_uri = 'http://%s/mt/check.php?action=%s&reader=%s&card=%s' 
     debug = True
     boudrate = 9600
     sleep_delay = 5
     check_delay = 3
+    netcheck_timeout = 8   # timeout to check network state
     default_failure_tries = 10
     devs = [
         {
