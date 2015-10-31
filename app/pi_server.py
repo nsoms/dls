@@ -99,12 +99,13 @@ class Server(threading.Thread):
         print time.ctime(), self.name, "Executing callback '" + action + "' with card " + card
 
         # in failure state - just check should we open or not. In we should - then open for any card
-        #if self.config.get('failure', False):
         if not Config.netcheck_status:
-            print time.ctime(), self.name, "Network failure. Check config to open door."
+            #print time.ctime(), self.name, "Network failure. Check config to open door."
             if self.config.get('open', False):
                 print time.ctime(), self.name, "Network failure. Open door due to configuration"
                 self.send_gpio()
+            else:
+                print time.ctime(), self.name, "Network failure. Not permitted to open door"
             return
 
         # execute callback function
@@ -118,7 +119,6 @@ class Server(threading.Thread):
                 print time.ctime(), "Executed with ret val False"
         except Exception as e:
             # if exception raised - then something goes wrong with network connection on smthn else.
-            # Set to failure state and start execute action in automatic
             print time.ctime(), self.name, "Error executing callback: ", str(e), ". Check config to open door."
             if self.config.get('open', False):
                 self.send_gpio()
