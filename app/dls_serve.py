@@ -100,22 +100,44 @@ class Server(threading.Thread):
             return
         print time.ctime(), self.name, "Executing callback '" + action + "' with card " + card
 
+        # in failure state - just check should we open or not. In we should - then open for any card
+        if self.config.get('failure', False):
+            print time.ctime(), self.name, "In failure state. Attempt # " + \
+                                           self.config.get('attempts', 1) + " / " + \
+                                           self.config.get('failure_try', Config.default_failure_tries)
+            if self.config.get('attempts', 1) == self.config.get('failure_try', Config.default_failure_tries):
+                print time.ctime(), self.name, "Return to normal state"
+            else:
+                if self.config.get('open', False):
+                    print time.ctime(), self.name, "In failure state. Open door due to configuration "
+                    self.send_gpio()
+                self.config['attempts'] = self.config.get('attempts', 1) + 1
+                return
+
         # execute callback function
         try:
             if func(self.name, card):
                 print time.ctime(), "Executed with ret val True"
                 # check we should send signal to GPIO interface
-                send_gpio = self.config.get('open', False)
-                if send_gpio:
+                if self.config.get('open', False):
                     self.send_gpio()
             else:
                 print time.ctime(), "Executed with ret val False"
         except Exception as e:
-            print time.ctime(), self.name, "Error executing callback: ", str(e), " Exception pass"
+            # if exception raised - then something goes wrong with network connection on smthn else.
+            # Set to failure state and start execute action in automatic
+            print time.ctime(), self.name, "Error executing callback: ", str(e), ". "
+            print time.ctime(), self.name, "Due to error set state to Failured. Retry in " + \
+                                           self.config.get('failure_try', Config.default_failure_tries) + \
+                                           " attempts. If configured to open - then open"
+
+            self.config['failure'] = True
+            self.config['attempts'] = 1
+            if self.config.get('open', False):
+                self.send_gpio()
             pass
 
     def process(self):
-        
         while 1:
             self.buf = ''
             # let's wait one second before reading output (let's give device time to answer)
@@ -138,6 +160,7 @@ class Server(threading.Thread):
 
         # store given config
         self.config = config
+        self.config['failure'] = False
 
         # configure the serial connections (the parameters differs on the device you are connecting to)
         self.port = config.get('port', None)
