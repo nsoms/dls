@@ -9,7 +9,7 @@ class Config:
     sleep_delay = 5
     check_delay = 3
     netcheck_timeout = 8   # timeout to check network state
-    default_failure_tries = 10
+    netcheck_status = True # status of the network connection
     devs = [
         {
             'name': 'Entrance',         # Name of reader

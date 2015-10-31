@@ -11,7 +11,6 @@ class NetCheck(threading.Thread):
     port = Config.server_port
     #addr = '8.8.8.8'
     #port = 53
-    status = True
 
     def __init__(self):
         # initialize parent class
@@ -24,25 +23,25 @@ class NetCheck(threading.Thread):
 
     def __exit__(self, type, value, traceback):
         print time.ctime(), self.name, "Exiting checker "
+        print time.ctime(), type, value, traceback
 
     def run(self):
         self.process()
 
     def process(self):
         while(1):
-            # print time.ctime(), self.name, "checking"
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.settimeout(0.7)
                 s.connect((NetCheck.addr, NetCheck.port))
                 NetCheck.IP = s.getsockname()[0]
-                if NetCheck.status == False: 
-                    print time.ctime(), self.name, " network returned back to OK"
-                NetCheck.status = True
+                if Config.netcheck_status == False:
+                    print time.ctime(), self.name, "Network returned back to OK"
+                Config.netcheck_status = True
             except Exception as e:
-                NetCheck.status = False
+                Config.netcheck_status = False
                 NetCheck.IP = '127.0.0.1'
-                print time.ctime(), self.name, "Checker: network FAILED!!!", str(e)
+                print time.ctime(), self.name, "FAILED!!!", str(e)
             finally:
                 s.close()
             time.sleep(Config.netcheck_timeout)
