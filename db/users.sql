@@ -104,7 +104,8 @@ CREATE OR REPLACE FUNCTION
         in_pic_name     text,   -- $6
         in_birthday     date,   -- $7
         in_reg_form     text,   -- $8
-        in_group_ids    int[]   -- $9
+        in_group_ids    int[],  -- $9
+        in_position     text    -- $10
 ) RETURNS int AS $$
     DECLARE
         allowed bool;
@@ -126,7 +127,8 @@ CREATE OR REPLACE FUNCTION
                 middlename,
                 pic_name,
                 birthday,
-                reg_form
+                reg_form,
+                position
             ) VALUES (
                 in_card_number,
                 in_surname,
@@ -134,7 +136,8 @@ CREATE OR REPLACE FUNCTION
                 in_middlename,
                 in_pic_name,
                 in_birthday,
-                in_reg_form
+                in_reg_form,
+                in_position
             )
             RETURNING id INTO res;
 
@@ -163,7 +166,8 @@ CREATE OR REPLACE FUNCTION
         in_pic_name     text,
         in_birthday     date,
         in_reg_form     text,
-        in_group_ids    int[]
+        in_group_ids    int[],
+        in_position     text
 ) RETURNS int AS $$
     DECLARE
         allowed bool;
@@ -182,14 +186,16 @@ CREATE OR REPLACE FUNCTION
                 name,
                 middlename,
                 birthday,
-                reg_form
+                reg_form,
+                position
             ) = (
                 in_card_number,
                 in_surname,
                 in_name,
                 in_middlename,
                 in_birthday,
-                in_reg_form
+                in_reg_form,
+                in_position
             )
             WHERE id=in_id
             RETURNING id INTO res;
@@ -241,37 +247,6 @@ CREATE OR REPLACE FUNCTION
                 in_passwd,
                 in_role_id
             )
-            WHERE id=in_id
-            RETURNING id INTO res;
-
-        RETURN res;
-    EXCEPTION
-        WHEN unique_violation THEN
-            RETURN -1;     -- unique violation
-        WHEN OTHERS THEN
-            RETURN -1000;  -- unknown error
-    END;
-$$ LANGUAGE plpgsql VOLATILE;
-
-
-/* disables or enables user */
-CREATE OR REPLACE FUNCTION
-    user_endisable (
-    viewer_id   int,
-    in_id       int
-) RETURNS int AS $$
-    DECLARE
-        allowed bool;
-        res int;
-    BEGIN
-        allowed := allowed_users_role_set(viewer_id, NULL);
-
-        IF NOT allowed THEN
-            RETURN -3;   -- not enough rights to modify users
-        END IF;
-
-        UPDATE users
-            SET is_disabled = NOT is_disabled
             WHERE id=in_id
             RETURNING id INTO res;
 

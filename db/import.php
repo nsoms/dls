@@ -26,21 +26,27 @@ function csv_to_array($filename='', $delimiter=',')
 }
 
 function get_pupil_data_1($p) {
-    if (isset($p[4]))
-        return array(
-            'surname'   => $p[0],
-            'name'      => $p[1],
-            'middle'    => $p[2],
-            'bday'      => $p[3],
-            'partic_year' => $p[4],
-            'form'      => $p[5]
-        );
-    return array(
+    $res = array(
         'surname'   => $p[0],
         'name'      => $p[1],
         'middle'    => $p[2],
         'bday'      => $p[3],
+        'partic_year'   => '',
+        'form'      => '',
+        'position'  => null,
+        'card'      => ''
     );
+    if (isset($p[4]))
+        $res = array_merge($res, array(
+            'partic_year' => $p[4],
+            'form'      => $p[5]
+        ));
+    if (isset($p[6]))
+        $res = array_merge($res, array(
+            'position' => $p[6],
+            'card'     => $p[7]
+        ));
+    return $res;
 }
 
 
@@ -100,14 +106,13 @@ foreach ($data as $person) {
 
     $pp = get_pupil_data_1($person);
 
-/*    list($surname, $name, $middle) = explode(' ', $person[1], 3);
-    $person_id = $db->user_add(ADMIN_USER_ID, '', $surname, $name, $middle,
-        null, str_to_dbdate($person[4]), $group_names[0], $group_ids);*/
-    $person_id = $db->user_add(ADMIN_USER_ID, '', $pp['surname'], $pp['name'], $pp['middle'],
-        null, str_to_dbdate($pp['bday']), $group_names[0], $group_ids);
+/*$user_id, $card, $surname, $name, $middle,
+$pic_name, $bday, $reg_form, $group_ids*/
+    $person_id = $db->user_add(ADMIN_USER_ID, $pp['card'], $pp['surname'], $pp['name'], $pp['middle'],
+        null, str_to_dbdate($pp['bday']), $group_names[0], $group_ids, $pp['position']);
     if ($person_id < 0) {
-        echo "Ошибка " . $person_id . ": " . Errors::get($person_id);
-        exit(0);
+        echo "Ошибка " . $person_id . " (" . $pp['surname'] . "): " . Errors::get($person_id) . "\n";
+        continue;
     }
     echo $pp['surname'] . " добавлен с идентификатором " . $person_id . "\n";
 }

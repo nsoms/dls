@@ -248,16 +248,31 @@ class DB {
      * USERS FUNCTIONS
      */
 
-    public function user_add($user_id, $card, $surname, $name, $middle, $pic_name, $bday, $reg_form, $group_ids)
+    public function user_add($user_id,
+                             $card,
+                             $surname, $name, $middle,
+                             $pic_name, $bday,
+                             $reg_form, $group_ids,
+                             $position = null)
     {
         $res = pg_query_params(
             $this->get_con(),
-            'SELECT * FROM user_add($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-            array($user_id, $card, $surname, $name, $middle, $pic_name, $bday, $reg_form, DB::pass_array($group_ids))) or $this->error();
+            'SELECT * FROM user_add($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
+            array($user_id,
+                $card,
+                $surname, $name, $middle,
+                $pic_name, $bday,
+                $reg_form, DB::pass_array($group_ids),
+                $position)) or $this->error();
         return $this->one_val($res);
     }
 
-    public function user_mod($user_id, $id, $card, $surname, $name, $middle, $pic_name, $bday, $reg_form, $group_ids)
+    public function user_mod($user_id, $id,
+                             $card,
+                             $surname, $name, $middle,
+                             $pic_name, $bday,
+                             $reg_form, $group_ids,
+                             $position = null)
     {
         $res = pg_query_params(
             $this->get_con(),

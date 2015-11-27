@@ -9,24 +9,21 @@ if [ "$version" = "(0 rows)" ]; then
     found=1;
 fi;
 for update in `cat updates.txt`; do
-    echo "Update file: $update;"
+    echo -n "Update file: $update "
     if [ $found -eq 0 ]; then
-        echo $update $version
         if [ ! -z `echo $update | grep $version` ]; then
-            echo "`echo $update | grep $version`";
             found=1;
-            echo 'A skipping...'
+            echo "... skipping"
             continue;
         else
-            echo 'B skipping...'
+            echo "... skipping"
             continue;
         fi;
     fi;
-    echo "Applying...";
+    echo "... applying";
     psql $DB $DB -f $update;
     echo "Finished update $update"
 done;
-
 
 psql -h localhost -f functions.sql $DB $DB
 psql -h localhost -f roles.sql $DB $DB
