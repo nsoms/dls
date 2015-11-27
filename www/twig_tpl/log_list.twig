@@ -13,8 +13,10 @@
  9    groups          text[]                                  -- группы пользователя
 #}
 {% for user in data %}
-
-    <div class="col-md-6" style="margin-bottom:15px">
+    {% if loop.index0 % 2 == 0 %}
+    <div class="row">
+    {% endif %}
+    <div class="col-sm-5" style="margin-bottom:15px">
         <div class="center-block">
             {% if user[4] is empty %}
                 <img src="{{ ROOT }}img/nophoto.png" style='max-width: 320px' />
@@ -34,6 +36,10 @@
             <h6><small>{{ user[3] }}</small></h6>
         </div>
     </div>
+    <div class="col-sm-1" style="margin-bottom:15px"></div>
+    {% if loop.index0 % 2 == 1 %}
+    </div>
+    {% endif %}
 {% else %}
 <h3><small>Нет действий</small></h3>
 {% endfor %}

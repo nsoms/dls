@@ -6,9 +6,9 @@ class Config:
     check_uri = 'http://%s/mt/check.php?action=%s&reader=%s&card=%s' 
     debug = True
     boudrate = 9600
-    sleep_delay = 5
-    check_delay = 3
-    netcheck_timeout = 8   # timeout to check network state
+    sleep_delay = 3
+    check_delay = 5
+    netcheck_timeout = 30   # timeout to check network state
     netcheck_status = True # status of the network connection
     devs = [
         {

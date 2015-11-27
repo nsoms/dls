@@ -1,6 +1,15 @@
 #!/bin/bash
 
 
+# php import.php forms/2015-16/8-1.csv 08-1 Ученик
+php import.php forms/2015-16/8-2.csv 08-2 Ученик
+php import.php forms/2015-16/8-3.csv 08-3 Ученик
+php import.php forms/2015-16/8-4.csv 08-4 Ученик
+php import.php forms/2015-16/9-4.csv 09-4 Ученик
+php import.php forms/2015-16/10-6.csv 10-6 Ученик
+
+exit;
+
 php import.php forms/8-1_import.csv 08-1 Ученик
 php import.php forms/8-2_import.csv 08-2 Ученик
 php import.php forms/8-3_import.csv 08-3 Ученик
