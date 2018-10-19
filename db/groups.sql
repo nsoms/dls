@@ -14,6 +14,16 @@ CREATE OR REPLACE FUNCTION
         ORDER BY name
 $$ LANGUAGE SQL STABLE;
 
+/* Returns list of enabled user ids with given card number */
+CREATE OR REPLACE FUNCTION
+    groups_by_card (
+    in_card_number  text
+) RETURNS SETOF INT AS $$
+    SELECT DISTINCT group_id FROM user_groups
+        JOIN users u on user_groups.user_id = u.id
+        WHERE u.card_number = $1 AND NOT u.is_disabled
+$$ LANGUAGE SQL STABLE;
+
 /* creates new groups with given params */
 CREATE OR REPLACE FUNCTION
     group_add (
@@ -51,7 +61,6 @@ CREATE OR REPLACE FUNCTION
 ) RETURNS int AS $$
     DECLARE
         allowed bool;
-        res int;
     BEGIN
         allowed := allowed_groups_mod(viewer_id, in_id);
 

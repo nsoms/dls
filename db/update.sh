@@ -25,10 +25,10 @@ for update in `cat updates.txt`; do
     echo "Finished update $update"
 done;
 
-psql -h localhost -f functions.sql $DB $DB
-psql -h localhost -f roles.sql $DB $DB
-psql -h localhost -f groups.sql $DB $DB
-psql -h localhost -f users.sql $DB $DB
-psql -h localhost -f actions.sql $DB $DB
+#psql -h localhost -f functions.sql $DB $DB
+#psql -h localhost -f roles.sql $DB $DB
+#psql -h localhost -f groups.sql $DB $DB
+#psql -h localhost -f users.sql $DB $DB
+#psql -h localhost -f actions.sql $DB $DB
 
-#psql -h localhost -f functions.sql $DB $DB 2>&1 | egrep "ERR|ОШИБКА"
+psql -h localhost -f functions.sql $DB $DB 2>&1 | egrep "ERR|ОШИБКА"

@@ -92,6 +92,15 @@ CREATE OR REPLACE FUNCTION
         ORDER BY surname, name, middlename
 $$ LANGUAGE SQL STABLE;
 
+/* Returns list of enabled user ids with given card number */
+CREATE OR REPLACE FUNCTION
+    user_by_card (
+    in_card_number  text
+) RETURNS SETOF INT AS $$
+    SELECT DISTINCT id FROM users u
+        WHERE u.card_number = $1 AND NOT is_disabled
+$$ LANGUAGE SQL STABLE;
+
 
 /* creates new groups with given params */
 CREATE OR REPLACE FUNCTION
