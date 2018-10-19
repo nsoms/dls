@@ -22,7 +22,7 @@ $(document).ready(function() {
                 request = null;
             }
         });
-    }
+    };
 
     setInterval(update_func, 5000);
 });
