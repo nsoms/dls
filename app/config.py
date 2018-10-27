@@ -3,7 +3,7 @@ __author__ = 'soms'
 class Config:
     server_uri = '192.168.30.221'
     server_port = 80
-    check_uri = 'http://%s/mt/check.php?action=%s&reader=%s&card=%s' 
+    check_uri = 'https://%s/mt/check.php?action=%s&reader=%s&card=%s' 
     debug = True
     boudrate = 9600
     sleep_delay = 3
