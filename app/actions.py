@@ -18,7 +18,7 @@ def check_card(reader, card_num):
     if Config.debug:
         print "Check function: received result is: ", data
 
-    return data['access']
+    return data['access'] == u't'
 
 ACTIONS = {
     'check': check_card
