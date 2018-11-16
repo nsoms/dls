@@ -24,7 +24,7 @@
             {{#ifCond ../user_rights.mod '==' 't'}}
             <a href="#" class="link" data-user-id="{{ id }}">
             {{/ifCond}}
-            {{../user_rights.mod}} {{this.surname}} {{this.name}} {{this.middlename}}
+            {{this.surname}} {{this.name}} {{this.middlename}}
             {{#ifCond user_rights.mod '==' 't'}}
             </a>
             {{/ifCond}}

@@ -177,8 +177,6 @@ module.exports = (Handlebars["default"] || Handlebars).template({"1":function(co
     + "    <tr>\n        <td>\n"
     + ((stack1 = helpers.ifCond.call(alias1,((stack1 = (depths[1] != null ? depths[1].user_rights : depths[1])) != null ? stack1.mod : stack1),"==","t",{"name":"ifCond","hash":{},"fn":container.program(6, data, 0, blockParams, depths),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "            "
-    + alias3(alias2(((stack1 = (depths[1] != null ? depths[1].user_rights : depths[1])) != null ? stack1.mod : stack1), depth0))
-    + " "
     + alias3(alias2((depth0 != null ? depth0.surname : depth0), depth0))
     + " "
     + alias3(alias2((depth0 != null ? depth0.name : depth0), depth0))
