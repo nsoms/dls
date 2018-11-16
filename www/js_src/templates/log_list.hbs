@@ -1,0 +1,32 @@
+
+<div class="row">
+    {{#each data}}
+        <div class="col-sm-4" style="padding: 5px 5px; border: 1px solid darkgray">
+            <div class="col-sm-12 {{#ifCond this.result '==' 'f'}}bg-danger{{else}}bg-success{{/ifCond}}"
+                 style="padding: 10px">
+                <div class="center-block" style="margin: 0 auto">
+                    <img src="{{#if this.pic_name}}{{ this.pic_name }}{{else}}img/nophoto.png{{/if}}"
+                         class="img-responsive center-block"/>
+                </div>
+                <div class="">
+                    {{#if this.user_id}}
+                        <h3>{{ this.surname }} {{ this.name }} {{ this.middlename }}</h3>
+                        <h4>
+                            {{#each this.groups}}{{this}}{{/each}}
+                        </h4>
+                    {{else}}
+                        <h3>Неизвестная карта</h3>
+                        <h4>&nbsp;</h4>
+                    {{/if}}
+                    <h5>{{ this.reader }}
+                        <small>{{ this.action_time }}</small>
+                    </h5>
+                    <h6>
+                        <small>{{ this.card_number }}</small>
+                    </h6>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+</div>
+

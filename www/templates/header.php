@@ -1,116 +1,119 @@
 <?php
-    list($left_menu, $check_login) = $args;
+list($left_menu, $check_login) = $args;
 
-    global $user;
-    if($check_login && $user->is_anonymous() && HTML::page_name() != "login.php") {
-        header("Location: login.php");
-        exit(0);   
-    }
-    if(!$check_login && $user->is_anonymous())
-        $user = User::create_anonymous();
+global $user;
+if ($check_login && $user->is_anonymous() && HTML::page_name() != "login.php") {
+    header("Location: login.php");
+    exit(0);
+}
+if (!$check_login && $user->is_anonymous())
+    $user = User::create_anonymous();
 
-    $menu = array(
-        array(
-            'pagename' => 'users.php',
-            'caption' => 'Персоны',
-            'show' => $user->users_see
-        ),
-        array(
-            'pagename' => 'groups.php',
-            'caption' => 'Группы',
-            'show' => $user->groups_see
-        ),
-        array(
-            'pagename' => 'list.php',
-            'caption' => 'Активность',
-            'show' => $user->log_see
-        )
-    );
-?>
-<html>
-    <head>
-        <title><?php echo HTML::$title; ?></title>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <?php 
-        
-            HTML::include_css(ROOT.'css/all.css');
+$menu = array(
+    array(
+        'pagename' => 'users.php',
+        'caption' => 'Персоны',
+        'show' => $user->users_see
+    ),
+    array(
+        'pagename' => 'groups.php',
+        'caption' => 'Группы',
+        'show' => $user->groups_see
+    ),
+    array(
+        'pagename' => 'list.php',
+        'caption' => 'Активность',
+        'show' => $user->log_see
+    )
+);
+?><!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-            HTML::js('
-                var S_AJAX_CONNECTION_ERROR = "Ошибка связи с сервером:";
-                var S_AJAX_CONNECTION_TIMEOUT = "исчерпан лимит времени.";
-                var S_AJAX_CONNECTION_ABORTED = "связь была отменена.";
-                var S_AJAX_EMPTY_RESPONSE = "получен пустой ответ.";
-                var S_AJAX_CONNECTION_PARSER_ERROR = "внутренняя ошибка сервера.";
-                '
-            );
-            HTML::js('var AUTHENTICATED='.($user->is_anonymous()?'false;':'true;'));
-            
-            HTML::js('');
-            HTML::include_js(ROOT.'js/common.js');
-        ?>
-        <?php HTML::write_css_files(); ?>
-        <?php HTML::write_js_files(); ?>
-        <?php HTML::write_js_code(); ?> 
-      
-    </head>
-    <body>
-        <div class="alert warning" style="display: none" id="g_warning">
-            <p><span class="data"></span><span class="alertclose pointer"><img src="<?php echo ROOT; ?>img/alertclose.png" width="24" height="23" /></span></p>
+    <title><?php echo HTML::$title; ?></title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <?php
+
+    HTML::js('var AUTHENTICATED=' . ($user->is_anonymous() ? 'false;' : 'true;'));
+
+    HTML::js('');
+
+    HTML::write_css_files(); ?>
+</head>
+<body>
+<div id="wrapper">
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="<?php echo ROOT; ?>index.php">
+                <?php echo DLSConfig::$site_name ?>
+            </a>
+            <small id="loading_target" style="display: none"></small>
         </div>
-        <div class="alert info" style="display: none" id="g_info">
-            <p><span class="data"></span><span class="alertclose pointer"><img src="<?php echo ROOT; ?>img/alertclose.png" width="24" height="23" /></span></p>
-        </div>
-        <div class="alert error" style="display: none" id="g_error">
-            <p><span class="data"></span><span class="alertclose pointer"><img src="<?php echo ROOT; ?>img/alertclose.png" width="24" height="23" /></span></p>
-        </div>
-        <div class="alert success" style="display: none" id="g_success">
-            <p><span class="data"></span><span class="alertclose pointer"><img src="<?php echo ROOT; ?>img/alertclose.png" width="24" height="23" /></span></p>
-        </div>
-        <div id="Top">
-            <div id="LoginBox">
-            <?php
-              if (isset($user)&&!$user->is_anonymous())
-              { 
-                  echo $user->name, '&nbsp;<a href="' , ROOT , 'logout.php">Выйти</a>';
-              }    
-              else 
-              {
-                  echo '<a href="' , ROOT , 'login.php">Войти</a>';
-              }
-              ?>
-              <span id="LoadingBox" style="display:none;">
-                  <img src="<?php echo ROOT;?>img/load.gif" />
-              </span>
-            </div>
-        </div>
-        <div id="SuperContent">
-            <?php
-            if($left_menu) {
-                ?>
-                <div id="LeftMenu">
-                    <div id="Menu">
-                        <ul>
-                            <?php
-                            foreach ($menu as $m) {
-                                if (isset($user) && !$user->is_anonymous() && $m['show'] === 't')
-                                    echo "<li",
-                                    (HTML::page_name() == $m['pagename'] || HTML::page_path() . '/' . HTML::page_name() == $m['pagename'] ? ' class="selected"' : ''),
-                                    "><a href='", ROOT, $m['pagename'], "'>", $m['caption'], "</a></li>\n";
-                            }
-                            ?>
-                        </ul>
-                    </div>
-                    <?php HTML::placeholder('calendar'); ?>
-                </div>
-                <div id="Content">
-            <?php
-            } else echo "<div>";
+        <!-- /.navbar-header -->
+
+        <?php
+        if (!$user->is_anonymous()) {
             ?>
-                <div class="Title"><?php echo HTML::$page_title; ?></div>
-                <div id="Error" style="display:none"><?php HTML::placeholder('errors'); ?></div>
-                <div id="Status"><?php HTML::placeholder('errors'); ?></div>
-                <div class="Buttons">
-                    <?php HTML::placeholder('buttons'); ?>
-                    <ul id="ButtonsUL"></ul>
-                </div>
-                <div class="Data">
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                    <a id="user_dropdown" class="dropdown-toggle" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false" href="/" style="">
+                        <?php echo $user->name; ?>
+                        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user" aria-labelledby="user_dropdown">
+                        <?php
+                        /*
+                        <li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a></li>
+                        <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a></li>
+                        <li class="divider"></li>
+                        */
+                        ?>
+                        <li><a href="<?php echo ROOT; ?>logout.php"><i class="fa fa-sign-out fa-fw"></i>
+                                Выйти</a></li>
+                    </ul>
+                    <!-- /.dropdown-user -->
+                </li>
+                <!-- /.dropdown -->
+            </ul>
+            <!-- /.navbar-top-links -->
+            <?php
+        }
+        ?>
+
+        <div class="navbar-default sidebar" role="navigation">
+            <div class="sidebar-nav navbar-collapse">
+                <ul class="nav" id="side-menu">
+                    <?php //echo Menu::print_menu($user);
+                    foreach ($menu as $m) {
+                        if (/*isset($user) && !$user->is_anonymous() && */
+                            $m['show'] === 't')
+                            echo "<li",
+                            (HTML::page_name() == $m['pagename'] || HTML::page_path() . '/' . HTML::page_name() == $m['pagename'] ? ' class="selected"' : ''),
+                            "><a href='", ROOT, $m['pagename'], "'>", $m['caption'], "</a></li>\n";
+                    } ?>
+                </ul>
+            </div>
+            <!-- /.sidebar-collapse -->
+        </div>
+        <!-- /.navbar-static-side -->
+    </nav>
+
+    <div id="page-wrapper">
+        <div class="errors hidden" id="errors"><?php HTML::placeholder('errors'); ?></div>
+        <div class="infos hidden" id="infos"><?php HTML::placeholder('infos'); ?></div>
+
+        <!-- CONTENT STARTED -->

@@ -1,0 +1,5 @@
+{{#each groups}}
+    <option value="{{ this.id }}"
+            {{#ifIn this.id ../sel}} selected="selected"{{/ifIn}}>
+            {{ this.name }}</option>
+{{/each}}

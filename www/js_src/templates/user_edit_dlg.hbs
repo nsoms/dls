@@ -1,0 +1,98 @@
+<div id="person_mod_dlg" title="Редактирование пользователя">
+    <form role="form">
+        <fieldset>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="middle">Номер карты</label>
+                        <input maxlength="120" placeholder="Номер карты" name="card" tabindex="1"
+                               class="form-control" style="text-transform: capitalize;"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="surname" class="mandatory">Фамилия</label>
+                        <input maxlength="120" placeholder="Фамилия" name="surname" tabindex="2"
+                               class="form-control" style="text-transform: capitalize;"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="name" class="mandatory">Имя</label>
+                        <input maxlength="120" placeholder="Имя" name="name" tabindex="3"
+                               class="form-control" style="text-transform: capitalize;"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="middle" class="mandatory">Отчество</label>
+                        <input maxlength="120" placeholder="Отчество" name="middle" tabindex="4"
+                               class="form-control" style="text-transform: capitalize;"/>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="birthday" class="mandatory">Дата рождения</label>
+                        <input maxlength="120" placeholder="Дата рождения" name="birthday"
+                               class="form-control" tabindex="6"/>
+                        <input name="dbdate" type="hidden"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="regday">Дата регистрации</label>
+                        <input maxlength="120" placeholder="Дата регистрации" name="regday"
+                               class="form-control" tabindex="7" disabled/>
+                    </div>
+                    <div class="form-group">
+                        <label for="regclass">Класс регистрации</label>
+                        <input maxlength="120" placeholder="Класс регистрации" name="regclass"
+                               class="form-control" tabindex="8" disabled/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="groups" class="form-group">
+                        <select id="groups_select" multiple="multiple" class="form-control"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group" id="snapshot">
+                        <table width="100%" cellpadding="10">
+                            <tr>
+                                <td width="50%">
+                                    <video id="video" width="320" height="240"></video>
+                                </td>
+                                <td>
+                                    <canvas id="canvas" width="320" height="240"></canvas>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" align="center">
+                                    <button id="snap">Снять</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group" id="curphoto">
+                        <table width="100%" cellpadding="10">
+                            <tr>
+                                <td align="center">
+                                    <img src="img/load.gif" align="center" id="picname"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center">
+                                    <button id="change">Сменить</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>

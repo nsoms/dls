@@ -1,0 +1,17 @@
+$border-radius-base: 0px !default;
+$border-radius-large: 0px !default;
+$border-radius-small: 0px !default;
+
+$bootstrap-sass-asset-helper: false;
+$icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
+@import "~bootstrap-sass/assets/stylesheets/bootstrap";
+
+@import "~bootstrap-multiselect/dist/css/bootstrap-multiselect.css";
+
+//$fa-font-path: "~font-awesome/fonts";
+
+@import "~jquery.aiire.ajax.js/scss/jquery.aiire.ajax.scss";
+
+@import "sb-admin-2.scss";
+
+@import "jquery.growl";

@@ -1,5 +1,0 @@
-{# params: groups, sel #}
-
-{% for group in groups %}
-    <option value="{{ group[0] }}"{% if group[0] in sel %} selected="selected"{% endif %}> {{ group[1] }}</option>
-{% endfor %}

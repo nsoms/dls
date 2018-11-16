@@ -1,0 +1,56 @@
+{
+	"name": "dls_site",
+	"version": "0.0.1",
+	"authors": [
+		"Nick Soms <nsoms@aiire.org>"
+	],
+	"private": true,
+	"license": "MIT",
+	"homepage": "http://aiire.org",
+	"ignore": [
+		"**/.*",
+		"node_modules",
+		"bower_components",
+		"test",
+		"tests"
+	],
+	"scripts": {
+		"webpack": "webpack",
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"install": "node ./node_modules/npm-svn/src/scanner.js"
+	},
+	"devDependencies": {
+		"bootstrap-sass": "^3.3.7",
+		"css-loader": "^1.0.1",
+		"expose-loader": "^0.7.5",
+		"extract-text-webpack-plugin": "^3.0.2",
+		"imports-loader": "^0.8.0",
+		"node-sass": "^4.10.0",
+		"sass-loader": "^7.1.0",
+		"script-loader": "^0.7.2",
+		"style-loader": "^0.23.1",
+		"url-loader": "^1.1.2",
+		"file-loader": "^2.0.0",
+		"webpack": "^3.10.0"
+	},
+	"dependencies": {
+		"bootstrap": "^3.3.6",
+		"bootstrap-multiselect": "^0.9.13-1",
+		"jquery-bbq": "^1.0.0",
+		"jquery-form": "^4.2.2",
+		"jquery": "^3.3.1",
+		"history.js": "git+https://github.com/browserstate/history.js.git",
+		"jquery-ui": "^1.12.1",
+		"twig": "^1.12.0",
+		"webpack-jquery-ui": "^2.0.1",
+		"npm-svn": "^0.3.0",
+		"handlebars": "^4.0.12",
+		"jquery.growl": "^1.3.5",
+		"handlebars-loader": "^1.7.0"
+	},
+	"svnDependencies": {
+		"jquery.aiire.ajax.js": "http://svn.aiire.org/repos/bower_components/jquery.aiire.ajax.js/trunk/",
+		"aiire.handlebars.ifcond.js": "http://svn.aiire.org/repos/bower_components/aiire.handlebars.ifcond.js/trunk/",
+		"jquery.aiire.pager.js": "http://svn.aiire.org/repos/bower_components/jquery.aiire.pager.js/trunk/"
+	}
+}
