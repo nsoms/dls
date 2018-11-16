@@ -8,6 +8,8 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
 
 @import "~bootstrap-multiselect/dist/css/bootstrap-multiselect.css";
 
+@import "~jquery-ui/themes/base/dialog.css";
+
 //$fa-font-path: "~font-awesome/fonts";
 
 @import "~jquery.aiire.ajax.js/scss/jquery.aiire.ajax.scss";
@@ -15,3 +17,7 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
 @import "sb-admin-2.scss";
 
 @import "jquery.growl";
+
+@import "~bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css";
+
+@import "bootstrap-multiselect.css";

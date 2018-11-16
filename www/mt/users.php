@@ -9,6 +9,20 @@ include(ROOT . 'classes/helpers.php');
 
 Util::set_json_mode(true);
 
+function save_canvas($surname, $id, $regday, $regclass, $canvas) {
+    $canvas = str_replace('data:image/jpeg;base64,', '', $canvas);
+    $canvas = str_replace(' ', '+', $canvas);
+    $img = base64_decode($canvas);
+
+    $path = ROOT . '/photos/' . substr($regday, 0, 4) . '/' . $regclass;
+    if (!file_exists($path)) {
+        mkdir($path, 0777, true);
+    }
+    $picname = $path . '/' . $surname . $id . '.jpg';
+    file_put_contents($picname, $img);
+    return $picname;
+}
+
 $action = get_or_post('action');
 if( $action === 'users_list' ) {
     $name = get_or_post('n');
@@ -18,6 +32,9 @@ if( $action === 'users_list' ) {
         $card = null;
     $group_ids = get_or_post('g');
     $id = get_or_post_int('id');
+
+    if ($group_ids === "-1")
+        $group_ids = null;
 
     if(!is_array($group_ids) && $group_ids !== null)
         $group_ids = array($group_ids);
@@ -37,8 +54,9 @@ if( $action === 'users_list' ) {
 
     $groups = $db->groups_get($user->id, null, null);
 
+//    print_r($users);
     foreach ($users as &$user)
-        $user[13] = $db->parse_array($user[13]);
+        $user['group_ids'] = $db->parse_array($user['group_ids']);
 
     JSON::reply(array(
         'users' => $users,
@@ -54,14 +72,13 @@ if( $action === 'users_list' ) {
         Sanitize::clean($data['surname']),
         Sanitize::clean($data['name']),
         Sanitize::clean($data['middle']),
-//        str_to_dbdate(Sanitize::clean($data['birthday'])),
         Sanitize::clean($data['dbdate']),
         $data['groups']
     );
     $regday = date("Y-m-d");
 
     $regclass = $db->groups_get($user->id, $main_group_id, null);
-    $regclass = $regclass[0][1];
+    $regclass = $regclass[0]['name'];
 
     $res = $db->user_add($user->id, $card, $surname, $name, $middle, '', $birthday, $regclass, $groups);
 
@@ -72,19 +89,13 @@ if( $action === 'users_list' ) {
     $picname = '';
     $canvas = $data['canvas'];
     if (strlen($canvas) > 0) {
-        $canvas = str_replace('data:image/jpeg;base64,', '', $canvas);
-        $canvas = str_replace(' ', '+', $canvas);
-        $img = base64_decode($canvas);
-
-        $path = ROOT . '/photos/' . substr($regday, 0, 4) . '/' . $regclass;
-        if (!file_exists($path)) {
-            mkdir($path, 0777, true);
-        }
-        $picname = $path . '/' . $surname . $id . '.jpg';
-        file_put_contents($picname, $img);
+        $picname = save_canvas($surname, $id, $regday, $regclass, $canvas);
+        $picname = $picname . '?' . filemtime($picname);
     }
 
-    $res = $db->user_mod($user->id, $id, $card, $surname, $name, $middle, $picname, $birthday, $regclass, $groups);
+    $res = $db->user_mod($user->id, $id, $card, $surname, $name, $middle,
+        $picname,
+        $birthday, $regclass, $groups);
 
     JSON::reply(array(
         'success' => 1
@@ -99,7 +110,6 @@ if( $action === 'users_list' ) {
         Sanitize::clean($data['surname']),
         Sanitize::clean($data['name']),
         Sanitize::clean($data['middle']),
-//        str_to_dbdate(Sanitize::clean($data['birthday'])),
         Sanitize::clean($data['dbdate']),
         Sanitize::clean($data['regclass']),
         Sanitize::clean($data['regday']),
@@ -112,21 +122,13 @@ if( $action === 'users_list' ) {
     $picname = null;
     $canvas = $data['canvas'];
     if (strlen($canvas) > 0) {
-        $canvas = str_replace('data:image/jpeg;base64,', '', $canvas);
-        $canvas = str_replace(' ', '+', $canvas);
-        $img = base64_decode($canvas);
-
-        $path = ROOT . '/photos/' . substr($regday, 0, 4) . '/' . $regclass;
-        if (!file_exists($path)) {
-            mkdir($path, 0777, true);
-        }
-        $picname = $path . '/' . $surname . $id . '.jpg';
-        if (file_exists($picname))
-            unlink($picname);
-        file_put_contents($picname, $img);
+        $picname = save_canvas($surname, $id, $regday, $regclass, $canvas);
+        $picname = $picname . '?' . filemtime($picname);
     }
 
-    $res = $db->user_mod($user->id, $id, $card, $surname, $name, $middle, $picname, $birthday, $regclass, $groups);
+    $res = $db->user_mod($user->id, $id, $card, $surname, $name, $middle,
+        $picname,
+        $birthday, $regclass, $groups);
 
     if ($res < 0)
         JSON::error($res);

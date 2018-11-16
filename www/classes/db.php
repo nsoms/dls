@@ -164,21 +164,21 @@ class DB {
     
     private static function all_rows($result) {
         $rows = array();
-        while ($row = pg_fetch_row($result)) {
+        while ($row = pg_fetch_assoc($result)) {
             $rows[] = $row;
         }
         return $rows;
     }
     
     private static function one_val($result) {
-        $row = pg_fetch_row($result);
+        $row = pg_fetch_array($result);
         if (!$row) 
             return null;
         return $row[0];
     }
 
     static function one_row($result) {
-        $row = pg_fetch_row($result);
+        $row = pg_fetch_assoc($result);
         if (!$row)
             return null;
         return $row;
@@ -226,7 +226,7 @@ class DB {
         $group = null;
         // due to that groups_get returns all groups by substring we should check all returned groups for its name
         foreach ($groups as $gr)
-            if ($gr[1] == $group_name)
+            if ($gr['name'] == $group_name)
                 $group = $gr;
 
         $group_id = null;
@@ -238,7 +238,7 @@ class DB {
                 exit(0);
             }
         } else
-            $group_id = $group[0];
+            $group_id = $group['id'];
 
         return $group_id;
     }
@@ -305,7 +305,7 @@ class DB {
             array($lim, $offs)) or $this->error();
         $ret = $this->all_rows($res);
         foreach($ret as &$r)
-            $r[9] = $this->parse_array($r[9]);
+            $r['groups'] = $this->parse_array($r['groups']);
         return $ret;
     }
 

@@ -91,13 +91,6 @@ class HTML {
     public static function flush() {
         global $db;
         HTML::$flush_started = true;
-        foreach (HTML::$infos as $e) {
-            HTML::fill_placeholder('errors','<b>Info: '.$e.'</b><br/>');
-        }
-        foreach (HTML::$errors as $e) {
-            HTML::fill_placeholder('errors','<b>Error: '.$e.'</b><br/>');
-        }
-
         $init_twig = false;
         foreach (HTML::$templates as $t) {
             list($tt,$tc,$args) = $t;
@@ -108,9 +101,6 @@ class HTML {
                     break;
                 case TEMPLATE_TYPE_META:
                     HTML::include_template_meta($tc,$args);
-                    break;
-                case TEMPLATE_TYPE_TWIG:
-                    $init_twig = true;
                     break;
             }
         }
@@ -128,9 +118,6 @@ class HTML {
                     break;
                 case TEMPLATE_TYPE_META:
                     include_once(ROOT.'templates/'.$tc.'.php');
-                    break;
-                case TEMPLATE_TYPE_TWIG:
-                    echo HTML::twig_template_render($template, $args);
                     break;
             }
         }
@@ -174,13 +161,14 @@ class HTML {
     }
 
     public static function header($left_menu=true, $check_login=true) {
-        HTML::template('header', array($left_menu, $check_login));
+        if ($left_menu)
+            HTML::template('header', array($left_menu, $check_login));
+        else
+            HTML::template('header_simple', array($left_menu, $check_login));
     }
 
     public static function include_dlg( $template, $args ) {
         HTML::$templates[] = array(TEMPLATE_TYPE_DLG, $template, $args);
-        //HTML::fill_placeholder( 'dialogues', file_get_contents( ROOT . 'templates/dlgs/' .  $name . '.php' ) );
-        HTML::include_js( ROOT . 'js/dlgs/' . $template . '.js' );
     }
 
     /*
@@ -228,32 +216,6 @@ class HTML {
     public static function js($code) {
         HTML::$js[] = $code;
     }
-    public static function js_template($name,$code) {
-        $code = trim($code);
-        $code = str_replace("\r",'',$code);
-        $code = str_replace("'","\\'",$code);
-        $code = str_replace("\n","\\n'+\n'",$code);
-        HTML::$js[] = 'var '.$name.'_obj = new EJS({text:\''.$code.'\'});'; // ejs templates
-        HTML::$js[] = "var $name = ${name}_obj.render.bind(${name}_obj);";
-    }
-    public static function js_template_file($name) {
-        $fname = 'templates/js/'.$name.'.ejs';
-//    HTML::$js[] = 'EJS.config({cache: false});';
-        HTML::$js[] = 'var '.$name.'_obj = new EJS({url:"'.$fname.'?'.strval(filemtime($fname)).'"});';
-//        HTML::$js[] = 'var '.$name.'_obj = new EJS({uri:"'.$fname.'"});';
-        HTML::$js[] = "var $name = ${name}_obj.render.bind(${name}_obj);";
-    }
-    public static function twig_js_template_file($name) {
-        if (!HTML::$twig_js_initialized) {
-            HTML::$twig_js_initialized = true;
-            HTML::$js[] = "Twig.getGlobals()['ROOT']=''; "
-            ;
-        }
-        $fname = ROOT.'templates/twig_js/'.$name.'.js';
-        HTML::include_js(ROOT.'js/twig.js');
-        HTML::include_js($fname);
-        HTML::$js[] = "tpl_$name=function(a){return Twig.render(__twig_tpl_$name,a);};";
-    }
     public static function include_js($fname,$charset=true) {
         HTML::$js_files[$fname] = $charset;
     }
@@ -263,20 +225,12 @@ class HTML {
     }
     
     public static function include_jquery() {
-        HTML::include_js(ROOT.'js/jquery-1.9.1.min.js');
-        HTML::include_js(ROOT.'js/jquery-migrate-1.1.0.min.js');
     }
     
     public static function include_jquery_ui() {
-        HTML::include_js(ROOT.'js/jquery-ui-1.10.1.custom.min.js');
-        HTML::include_js(ROOT.'js/jquery.ui.datepicker-ru.js');
-        HTML::include_css(ROOT.'css/smoothness_new/jquery-ui.css');
     }
 
     public static function include_bootstrap() {
-        HTML::include_js(ROOT . 'bootstrap-3.3.2/js/bootstrap.min.js');
-        HTML::include_css(ROOT . 'bootstrap-3.3.2/css/bootstrap.min.css');
-        HTML::include_css(ROOT . 'bootstrap-3.3.2/css/bootstrap-theme.min.css');
     }
 
     public static function fill_placeholder($name,$content) {
@@ -321,46 +275,13 @@ class HTML {
         echo '<dl class="ginfo"><dt>Инфо</dt><dd>', $info, '</dd></dl>';
     }
 
-    public static function footer() {
-        HTML::template('footer');
+    public static function footer($left_menu = true) {
+        if ($left_menu)
+            HTML::template('footer');
+        else
+            HTML::template('footer_simple');
     }
 
-    public static function twig_init($options = array()) {
-        if (HTML::$twig !== null) return;
-        require_once ROOT.'Twig/Autoloader.php';
-        Twig_Autoloader::register();
-        $loader = new Twig_Loader_Filesystem(ROOT.'twig_tpl');
-        HTML::$twig = new Twig_Environment($loader, array_merge(array(
-            'debug' => 'true',
-            'cache' => TWIG_PHP_TPL_DIR, //ROOT . 'twig_cache',
-            'autoescape' => false
-        ), $options));
-        HTML::$twig->addGlobal('ROOT', ROOT);
-        HTML::$twig->addFilter('get_course_name', new Twig_Filter_Function('get_course_name'));
-        HTML::$twig->addFilter('get_testing_time', new Twig_Filter_Function('get_testing_time'));
-        HTML::$twig->addFilter('get_testing_length', new Twig_Filter_Function('get_testing_length'));
-        HTML::$twig->addFilter('print_typed_val', new Twig_Filter_Function('print_typed_val'));
-        HTML::$twig->addFilter('print_test_types', new Twig_Filter_Function('print_test_types'));
-        HTML::$twig->addFilter('protocol_date', new Twig_Filter_Function('protocol_date'));
-        HTML::$twig->addFilter('get_twig_datetime', new Twig_Filter_Function('get_twig_datetime'));
-        HTML::$twig->addFilter('get_twig_date', new Twig_Filter_Function('get_twig_date'));
-        HTML::$twig->addExtension(new Twig_Extension_Debug());
-    }
-
-    public static function twig_template($template, $args) {
-        HTML::$templates[] = array(TEMPLATE_TYPE_TWIG, $template, $args);
-    }
-
-    public static function twig_template_render($template, $args) {
-        HTML::twig_init();
-        echo HTML::$twig->render($template.'.twig', $args);
-    }
-
-    public static function twig_template_render_str($template, $args) {
-        HTML::twig_init();
-        return HTML::$twig->render($template.'.twig', $args);
-    }
 };
 
 HTML::js('var ROOT="'.ROOT.'";');
-?>

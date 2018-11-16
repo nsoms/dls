@@ -11,8 +11,7 @@ require(ROOT.'classes/init.php');
 require(ROOT.'classes/html.php');
 
 HTML::set_title('Активность');
-HTML::header(false, false);
+HTML::header($user->allowed_menu(), false);
 HTML::template('list', array());
 HTML::footer();
 HTML::flush();
-?>

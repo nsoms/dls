@@ -85,4 +85,3 @@ date_default_timezone_set('Europe/Moscow');
 
 //include (ROOT.'templates/'.Locale::$locale.'/errors.php');
 include (ROOT.'classes/errors.php');
-?>

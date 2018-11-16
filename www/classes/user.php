@@ -96,6 +96,10 @@ class User {
     public function is_local() {
         return $this->login !== null;
     }
+
+    public function allowed_menu() {
+        return $this->users_see == 't';
+    }
     
     public function set_session() {
         Session::start();

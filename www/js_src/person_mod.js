@@ -1,60 +1,106 @@
 /**
  * Person  add dialogue
  */
-var Functions = require('../common');
+var Functions = require('./common');
 var Handlebars = require('handlebars/runtime');
 if (typeof Handlebars.templates === 'undefined')
     Handlebars.templates = [];
-Handlebars.templates.groups_select = require('../templates/groups_select.hbs');
+Handlebars.templates.groups_select = require('./templates/groups_select.hbs');
+Handlebars.templates.user_edit_dlg = require('./templates/user_edit_dlg.hbs');
 
-require('webpack-jquery-ui/dialog');
-require('webpack-jquery-ui/datepicker');
 require('bootstrap-multiselect');
+var moment = require('moment');
 var BootstrapDialog = require('bootstrap3-dialog');
+require('bootstrap-datepicker');
+var parseDate = require('postgres-date');
 
 var PersonModDlg = {
-    element: '#person_mod_dlg',
+    user: {},
+    groups: [],
+    sel_groups: [],
+    dlg: null,
     canvas: false,
     context: false,
-    video: false,
-    img_changed: false,
-    dlg: null,
-    init: function () {
-        if ($(PersonModDlg.element).length === 0)
-            return;
-
-        if (PersonModDlg.dlg === null)
-            PersonModDlg.dlg = new BootstrapDialog({
-                type: BootstrapDialog.TYPE_PRIMARY,
-                size: BootstrapDialog.SIZE_LARGE,
-                message: $(PersonModDlg.element).html()
-            });
-
-        PersonModDlg.canvas = document.getElementById("canvas");
-        PersonModDlg.context = PersonModDlg.canvas.getContext("2d");
-        PersonModDlg.video = document.getElementById("video");
-        PersonModDlg.bind_all();
-        PersonModDlg.play_canvas();
+    video: null,
+    callback: function () {
     },
-    prepare_dlg: function () {
-        if ($(PersonModDlg.element).length == 0) {
-            console.error("Target not found");
-            return;
+    element: null,
+    edit: function (user_id, sel_groups, callback) {
+        PersonModDlg.callback = callback;
+        ajax({
+            async: false,
+            url: ROOT + 'mt/users.php',
+            data: {
+                action: 'user_info',
+                id: user_id
+            }
+        }).then(function (data) {
+            if (('user_rights' in data) && data.user_rights['mod'] !== 't')
+                return;
+            if (!('groups' in data) || !('users' in data))
+                return;
+            if (data.users.length === 1 && data.users[0].length !== 0) {
+                PersonModDlg.user = data.users[0];
+                PersonModDlg.groups = data.groups;
+                PersonModDlg.sel_groups = PersonModDlg.user['group_ids'];
+            }
+            else {
+                PersonModDlg.user = null;
+                PersonModDlg.groups = data.groups;
+                PersonModDlg.sel_groups = sel_groups;
+            }
+
+            PersonModDlg.show(PersonModDlg.user === null);
+        });
+    },
+    show: function (new_person) {
+        console.log(PersonModDlg.sel_groups);
+        PersonModDlg.element = $(Handlebars.templates.user_edit_dlg(
+            {
+                'user': PersonModDlg.user,
+                'groups': PersonModDlg.groups,
+                'sel_groups': PersonModDlg.sel_groups,
+                'ROOT': ROOT
+            }
+        ));
+        PersonModDlg.dlg = new BootstrapDialog({
+            type: BootstrapDialog.TYPE_PRIMARY,
+            size: BootstrapDialog.SIZE_WIDE,
+            message: PersonModDlg.element,
+            onhidden: function () {
+                PersonModDlg.stop_canvas();
+                $('input[name="birthday"]', PersonModDlg.element).datepicker('destroy');
+                PersonModDlg.callback = function () {
+                };
+            }
+        });
+        PersonModDlg.canvas = $('#canvas', PersonModDlg.element)[0];
+        PersonModDlg.context = PersonModDlg.canvas.getContext("2d");
+        PersonModDlg.video = $('#video', PersonModDlg.element)[0];
+
+        PersonModDlg.bind();
+
+        if (new_person || PersonModDlg.user['pic_name'] == '') {
+            PersonModDlg.img_changed = true;
+            PersonModDlg.play_canvas();
+            $('#snapshot', PersonModDlg.element).show();
+        } else {
+            PersonModDlg.img_changed = false;
+            PersonModDlg.stop_canvas();
+            $('#curphoto', PersonModDlg.element).show();
+
         }
 
-        Functions.clear_dialog(PersonModDlg.element);
-        $('img', PersonModDlg.element).attr('src', '#');
-        PersonModDlg.stop_canvas();
+        if (new_person) {
+            PersonModDlg.dlg.setTitle("Добавить персону");
+            PersonModDlg.set_buttons('user_add', PersonModDlg.callback, null, PersonModDlg.sel_groups);
+        } else {
+            PersonModDlg.dlg.setTitle("Редактировать персону");
+            PersonModDlg.set_buttons('user_mod', PersonModDlg.callback, PersonModDlg.user['id']);
+        }
+        PersonModDlg.dlg.open();
     },
-    fill_groups: function (groups, selected) {
-        console.log(selected);
-        $('#groups_select', PersonModDlg.element).html(
-            Handlebars.templates.groups_select({
-                'groups': groups,
-                'sel': selected
-            })
-        );
-        $('#groups_select', PersonModDlg.element).multiselect('destroy');
+    bind: function () {
         $('#groups_select', PersonModDlg.element).multiselect({
             //checkboxName: 'groups[]',
             buttonText: function (options, select) {
@@ -75,235 +121,121 @@ var PersonModDlg = {
                 }
             }
         });
-    },
-    open: function (group_id, add_group_id, callback) {
-        if ($(PersonModDlg.element).length == 0) {
-            console.error("Target not found");
-            return;
-        }
-
-        PersonModDlg.prepare_dlg();
-
-        PersonModDlg.dlg.setTitle("Добавить персону");
-        // $(PersonModDlg.element).dialog("option", "title", "Добавить персону");
-
-        PersonModDlg.img_changed = true;
-        //PersonModDlg.play_canvas();
-        $('#snapshot', PersonModDlg.element).show();
-        $('#curphoto', PersonModDlg.element).hide();
-
-        var groups = [String(group_id), String(add_group_id)];
-
-        ajax({
-            async: false,
-            url: ROOT + 'mt/groups.php',
-            data: {
-                action: 'groups_list'
-            },
-            success: function (data) {
-                PersonModDlg.fill_groups(data.groups, groups);
-            }
-        });
-
-        PersonModDlg.dlg.setButtons(
-            [
-                {
-                    label: 'Сохранить',
-                    action: function () {
-                        if (!PersonModDlg.validate())
-                            return;
-
-                        ajax({
-                            url: ROOT + 'mt/users.php',
-                            data: {
-                                action: 'user_add',
-                                params: PersonModDlg.get_data(),
-                                group_id: group_id
-                            },
-                            success: function (data) {
-                                if (callback)
-                                    callback(data.id, data.name);
-                                PersonModDlg.close();
-                            }
-                        });
-                    }
-                },
-                {
-                    label: 'Отмена',
-                    action: function () {
-                        PersonModDlg.close();
-                    }
-                }
-            ]
-        );
-        PersonModDlg.dlg.open();
-    },
-    edit: function (user_id, callback) {
-        if ($(PersonModDlg.element).length === 0) {
-            console.error("Target not found");
-            return;
-        }
-
-        PersonModDlg.prepare_dlg();
-        PersonModDlg.dlg.setTitle("Редактировать персону");
-
-        ajax({
-            async: false,
-            url: ROOT + 'mt/users.php',
-            data: {
-                action: 'user_info',
-                id: user_id
-            },
-            success: function (data) {
-                if (data.user_rights['mod'] != 't') {
-                    show_error('Недостаточно прав');
-                    return;
-                }
-
-                $('input[name="card"]', PersonModDlg.element).focus();
-
-                var user = null, pic_name = null;
-                if (data.users.length === 1)
-                    user = data.users[0];
-                if (user.length === 0) {
-                    show_error('Ошибка получения данных');
-                    return;
-                }
-
-                $('input[name="card"]', PersonModDlg.element).val(user[1]);
-                $('input[name="surname"]', PersonModDlg.element).val(user[2]);
-                $('input[name="name"]', PersonModDlg.element).val(user[3]);
-                $('input[name="middle"]', PersonModDlg.element).val(user[4]);
-                pic_name = user[5];
-                $('input[name="dbdate"]', PersonModDlg.element).val(user[5]);
-                var date = new Date(user[6]);
-                $('input[name="birthday"]', PersonModDlg.element).datepicker("setDate", date);
-
-                $('input[name="regday"]', PersonModDlg.element).val(user[7]);
-                $('input[name="regclass"]', PersonModDlg.element).val(user[8]);
-
-                if (pic_name !== null && pic_name !== '') {
-                    PersonModDlg.img_changed = false;
-                    //PersonModDlg.stop_canvas();
-                    $('#snapshot', PersonModDlg.element).hide();
-                    $('#curphoto', PersonModDlg.element).show();
-                    $('#picname', PersonModDlg.element).attr('src', pic_name + '?rand=' + Math.random());
-                } else {
-                    PersonModDlg.img_changed = true;
-                    //PersonModDlg.play_canvas();
-                    $('#snapshot', PersonModDlg.element).show();
-                    $('#curphoto', PersonModDlg.element).hide();
-                }
-
-                PersonModDlg.fill_groups(data.groups, user[13]);
-            }
-        });
-
-        PersonModDlg.dlg.setButtons(
-            [
-                {
-                    label: 'Сохранить',
-                    action: function () {
-                        if (!PersonModDlg.validate())
-                            return;
-
-                        ajax({
-                            url: ROOT + 'mt/users.php',
-                            data: {
-                                action: 'user_mod',
-                                id: user_id,
-                                params: PersonModDlg.get_data()
-                            },
-                            success: function (data) {
-                                if (callback)
-                                    callback(data.id);
-                                PersonModDlg.close();
-                            }
-                        });
-                    }
-                },
-                {
-                    label: 'Отмена',
-                    action: function () {
-                        $(this).dialog('close');
-                    }
-                }
-            ]);
-        PersonModDlg.dlg.open();
-    },
-    bind_all: function () {
         $('input[name="birthday"]', PersonModDlg.element).datepicker({
-            changeMonth: true,
-            changeYear: true,
-            minDate: '-90y',
-            defaultDate: '01.01.1970',
-            yearRange: '1930:-10y',
-            altField: $('input[name="dbdate"]', PersonModDlg.element),
-            altFormat: 'yy-mm-dd'
+            language: "ru",
+            todayHighlight: true,
+            toggleActive: false
+        }).on('changeDate', function () {
+            $('input[name="dbdate"]', PersonModDlg.element).val(
+                moment($(this).datepicker('getDate')).format('YYYY-MM-DD')
+            );
         });
+
+        var vl = $('input[name="dbdate"]', PersonModDlg.element).val();
+        var dt = new Date();
+        if (vl != '')
+            dt = new Date(vl);
+        $('input[name="birthday"]', PersonModDlg.element).datepicker(
+            'update',
+            new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), 0, 0, 0)
+        );
 
         PersonModDlg.bind_snap();
         PersonModDlg.bind_change();
     },
-    play_canvas: function () {
-        // Grab elements, create settings, etc.
-        var videoObj = {video: true, audio: false, facingMode: "user"},
-            errBack = function (error) {
-                console.error("Video capture error: ", error.code);
-            };
-
-        // Put video listeners into place
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) { // Standard
-            navigator.mediaDevices.getUserMedia(videoObj)
-                .then(function (stream) {
-                    console.log(PersonModDlg.video);
-                    console.log(PersonModDlg.video.srcObject);
-                    console.log(PersonModDlg.video.src);
-                    PersonModDlg.video.srcObject = PersonModDlg.video.src = stream;
-                    PersonModDlg.video.play();
-                })
-                .catch(errBack);
-        }
-    },
-    stop_canvas: function () {
-        //PersonModDlg.video.pause();
-        //PersonModDlg.video.src = null;
-
-        var context = PersonModDlg.canvas.getContext("2d");
-        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-    },
     bind_snap: function () {
-        $('#snap', PersonModDlg.element).click(function (event) {
+        $('#snap', PersonModDlg.element).unbind('click').click(function (event) {
             event.preventDefault();
             PersonModDlg.context.drawImage(PersonModDlg.video, 0, 0, 320, 240);
         });
     },
     bind_change: function () {
-        $('#change').click(function (event) {
+        $('#change', PersonModDlg.element).unbind('click').click(function (event) {
             event.preventDefault();
             PersonModDlg.img_changed = true;
-            //PersonModDlg.play_canvas();
+            PersonModDlg.play_canvas();
             $('#snapshot', PersonModDlg.element).show();
             $('#curphoto', PersonModDlg.element).hide();
         });
     },
-    close: function () {
-        PersonModDlg.stop_canvas();
-        PersonModDlg.dlg.close();
-        // $(PersonModDlg.element).dialog('close');
+    errBack: function (error) {
+        console.error("Video capture error: ", error.code);
+    },
+    play_canvas: function () {
+        // Grab elements, create settings, etc.
+        var videoObj = {video: true, audio: false, facingMode: "user"};
+
+        // Put video listeners into place
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) { // Standard
+            navigator.mediaDevices
+                .getUserMedia(videoObj)
+                .then(function (stream) {
+                    PersonModDlg.video.srcObject = PersonModDlg.video.src = stream;
+                    PersonModDlg.video.play();
+                })
+                .catch(PersonModDlg.errBack);
+        }
+    },
+    stop_canvas: function () {
+        var context = PersonModDlg.canvas.getContext("2d");
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+
+        if (PersonModDlg.video && PersonModDlg.video.srcObject)
+            PersonModDlg.video.srcObject
+                .getTracks()
+                .forEach(function (e) {
+                    e.stop();
+                });
     },
     validate: function () {
         var ret = true;
         $('label.mandatory', PersonModDlg.element).each(function (index) {
             if ($(this).next('input').val() == '') {
-                $(this).next('input').addClass('not_filled');
+                $(this).next('input').addClass('danger');
                 ret = false;
             }
             else
-                $(this).next('input').removeClass('not_filled');
+                $(this).next('input').removeClass('danger');
         });
 
         return ret;
+    },
+    set_buttons: function (action, callback, user_id, group_id) {
+        if (PersonModDlg.dlg === null)
+            return;
+        PersonModDlg.dlg.setButtons(
+            [
+                {
+                    label: 'Сохранить',
+                    action: function () {
+                        if (!PersonModDlg.validate())
+                            return;
+
+                        ajax({
+                            method: 'post',
+                            url: ROOT + 'mt/users.php',
+                            data: {
+                                action: action,
+                                id: user_id,
+                                group_id: group_id,
+                                params: PersonModDlg.get_data()
+                            },
+                            success: function (data) {
+                                if (callback)
+                                    callback(data.id);
+                                PersonModDlg.dlg.close();
+
+                            }
+                        });
+                    }
+                },
+                {
+                    label: 'Отмена',
+                    action: function () {
+                        PersonModDlg.dlg.close();
+                    }
+                }
+            ]);
     },
     get_data: function () {
         var data = {};
@@ -316,9 +248,5 @@ var PersonModDlg = {
         return data;
     }
 };
-
-$(document).ready(function () {
-    PersonModDlg.init();
-});
 
 module.exports = PersonModDlg;

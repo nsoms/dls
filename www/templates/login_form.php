@@ -1,11 +1,11 @@
-<form action="login.php" method="POST">
-    <div class="Field">
-    <label for="l">Логин:</label><input type="text" name="l"/>
-    </div>
-    <div class="Field">
-    <label for="p">Пароль:</label><input type="password" name="p"/><br/>
-    </div>
-    <div class="Field">
-    <input type="submit" value="Вход" />
-    </div>
+<form action="login.php" role="form" method="post">
+    <fieldset>
+        <div class="form-group">
+            <input class="form-control" placeholder="Логин" name="l" type="text" value="" autofocus="">
+        </div>
+        <div class="form-group">
+            <input class="form-control" placeholder="Пароль" name="p" type="password" value="">
+        </div>
+        <input type="submit" class="btn btn-lg btn-success btn-block" value="Войти">
+    </fieldset>
 </form>

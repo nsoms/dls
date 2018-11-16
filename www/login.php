@@ -22,7 +22,9 @@ function redir() {
         $redirect=substr($_SERVER["PHP_SELF"],0,-9).ROOT.'index.php';
     }
 
-    $redirect='http://'.$_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$redirect;
+    ;
+
+    $redirect= (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$redirect;
     header ('Location: '.$redirect);
     exit(0);
 }

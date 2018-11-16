@@ -1,34 +1,13 @@
-<!--
-{# params: users, user_rights #}
-
-{#
- 0    id              int,
- 1    card_number     text,                                   -- номер карты
- 2    surname         text,                                   -- фамилия
- 3    name            text,                                   -- имя
- 4    middlename      text,                                   -- отчество
- 5    pic_name        text,                                   -- имя файла фотографии
- 6    birthday        date,                                   -- дата рождения
- 7    register        timestamp with time zone,               -- дата регистрации
- 8    reg_form        text,                                   -- класс регистрации
- 9    login           name,                                   -- логин для авторизации
-10    role_id         int,                                    -- guest по-умолчанию
-11    rolename        name,                                   -- роль
-12    is_disabled     bool                                    -- включен/выключен
-
-#}
--->
-
 {{#ifCond user_rights.mod '==' 't'}}
     <button class="btn btn-default" type="button" id="AddPersonPupilBtn">Добавить ученика</button>
     <button class="btn btn-default" type="button" id="AddPersonTeacherBtn">Добавить учителя</button>
 {{/ifCond}}
 
-<table width=100% class="table table-striped">
+<table width=100% class="table table-hover">
     {{#each users}}
         {{#if @first}}
             <thead>
-            <tr style="font-weight: bold;">
+            <tr>
                 <th>ФИО</th>
                 <th>Номер карты</th>
                 <th>Дата рождения</th>
@@ -40,20 +19,20 @@
             </thead>
         <tbody>
         {{/if}}
-    <tr style="vertical-align:top" class="PersonRow EntityRow">
+    <tr>
         <td>
-            {{#ifCond user_rights.mod '==' 't'}}
+            {{#ifCond ../user_rights.mod '==' 't'}}
             <a href="#" class="link" data-user-id="{{ id }}">
             {{/ifCond}}
-            {{this.surname}} {{this.name}} {{this.middlename}}
+            {{../user_rights.mod}} {{this.surname}} {{this.name}} {{this.middlename}}
             {{#ifCond user_rights.mod '==' 't'}}
             </a>
             {{/ifCond}}
         </td>
 
         <td>{{ this.card_number }} &nbsp;</td>
-        <td>{{ this.birthday }}</td>
-        <td>{{ this.register }}</td>
+        <td>{{ formatDate this.birthday }}</td>
+        <td>{{ formatDateTime this.register }}</td>
         <td>{{ this.reg_form }}</td>
         <td>{{ this.rolename }}</td>
         <td>{{#ifCond this.is_disabled '==' 't'}}Да{{else}}Нет{{/ifCond}}</td>

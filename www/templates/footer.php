@@ -1,12 +1,11 @@
-	            </div>
-	        </div>
-        </div>
-
-<!-- ------------------------------------------------- -->        
+</div>
+</div>
 
 <?php
-    HTML::placeholder('dialogues');
+HTML::placeholder('dialogues');
 ?>
-    <a href="<?php echo ROOT;?>logout.php" style='color:white; float:right'>Выйти</a>
-    </body>
+
+<?php HTML::write_js_files(); ?>
+<?php HTML::write_js_code(); ?>
+</body>
 </html>
