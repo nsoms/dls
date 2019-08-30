@@ -1,5 +1,8 @@
 __author__ = 'soms'
 
+# list of gprcio devices
+devDict = {}
+
 class Config:
     server_uri = '192.168.30.221'
     server_port = 80
