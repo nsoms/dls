@@ -1,0 +1,26 @@
+face_rec_server.py:
+  FaceRecServer.send_gpio() - send signal to open the door which is attached to the current instance of class
+  FaceRecServer.check() - check if port for door opening is available
+
+face_sig_handler.py:
+  class RequestHandler(pyjsonrpc.HttpRequestHandler) - handler for RPC queries
+  
+     @pyjsonrpc.rpcmethod
+  -  def get_grpcio_devs(self) - get list of available devices to open
+
+     @pyjsonrpc.rpcmethod
+  -  def open(self, a) - open door by device name
+
+
+  class HandlerServer(threading.Thread) - just starts and maintains in daemonic mode RequestHandler class
+
+config.py:
+
+  devDict = {}   # list of gprcio devices available, fullfilled on the start of dls_serve.py | used in RequestHandler class
+ 
+
+
+
+
+  
+  
